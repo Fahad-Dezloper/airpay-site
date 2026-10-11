@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Container, Eyebrow, Heading, Marked, Phone, PrimaryButton, SecondaryButton } from "@/components/ui";
+import { Container, Eyebrow, Heading, Marked, Phone } from "@/components/ui";
 import { Scrap, type ScrapKind } from "@/components/Art";
 import { HeroStage } from "@/components/HeroStage";
 import { Morph, type MorphItem } from "@/components/Morph";
@@ -15,6 +15,7 @@ import { OneQr } from "@/components/OneQr";
 import { Beam, PHONE_SHARE, SeekerBack } from "@/components/SeekerBeam";
 import { PayAnyone } from "@/components/PayAnyone";
 import { Secure } from "@/components/Secure";
+import { FloatingGet } from "@/components/FloatingGet";
 
 export default function Home() {
   return (
@@ -31,9 +32,9 @@ export default function Home() {
         <Team />
         */}
         <Faq />
-        <GetTheApp />
       </main>
       <Footer />
+      <FloatingGet />
     </>
   );
 }
@@ -650,35 +651,6 @@ function Faq() {
               <p className="pb-6 pl-8 pr-4 text-[16px] leading-[1.6] text-quiet">{f.a}</p>
             </details>
           ))}
-        </Reveal>
-      </Container>
-    </section>
-  );
-}
-
-/** The last word, as a quiet band: what it is and where to get it on the left, a moving mark on the right. */
-function GetTheApp() {
-  return (
-    <section id="get" className="bg-mist">
-      <Container className="grid items-center gap-10 py-16 md:grid-cols-2 md:gap-16 md:py-20">
-        <Reveal>
-          <Heading>Get AirPay</Heading>
-          <p className="mt-5 max-w-[440px] text-[18px] leading-[1.55] text-quiet">
-            AirPay runs on Solana mainnet. It is in private beta while it heads to the Solana dApp Store. Works best
-            with Solana Seeker and Android phones.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <PrimaryButton href={site.appUrl}>Get the app</PrimaryButton>
-            <SecondaryButton href={site.repoUrl}>View the code</SecondaryButton>
-          </div>
-        </Reveal>
-        <Reveal delay={90} className="relative mx-auto aspect-[1/0.78] w-full max-w-[420px]">
-          <div aria-hidden className="absolute inset-0">
-            <Loose pieces={LOOSE_RIGHT} />
-            <div className="absolute left-1/2 top-[47%] w-[40%] -translate-x-1/2 -translate-y-1/2">
-              <Morph items={WORKS} turn={1} />
-            </div>
-          </div>
         </Reveal>
       </Container>
     </section>
