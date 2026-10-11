@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/*
+ * The app's own palette, named as the app names it (tap/.../Design.kt). Two layers per hue:
+ * the bright fill for buttons and drawn marks, and the darker ink for words. White on the blue
+ * fill is only for text from 19px bold, as in the app; smaller words on blue use `blue-ink`
+ * grounds or grow.
+ */
+@theme {
+  --color-ink: #343433;
+  --color-quiet: #6e6e6e;
+  --color-line: #ebebeb;
+  --color-mist: #f6f7f9;
+  --color-paper: #ffffff;
+  --color-blue: #008fff;
+  --color-blue-ink: #0066cc;
+  --color-success: #00a344;
+  --color-success-ink: #1f7a35;
+  --color-highlight: #d7ff3a;
+  --color-night: #101216;
+  /* Illustration pigments: the scattered pieces on the app's first page, and nothing else. */
+  --color-sky: #7cc4ff;
+  --color-sun: #ffc53d;
+  --color-ember: #ff6a2b;
+  --color-leaf: #14b866;
+  --color-rose: #ff4f7b;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, Arial, sans-serif;
+  --font-brand: var(--font-bricolage), var(--font-inter), Arial, sans-serif;
+  --font-figure: var(--font-geist), var(--font-inter), Arial, sans-serif;
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* A sticky header would otherwise sit on top of a section jumped to by its link. */
+section[id] {
+  scroll-margin-top: 88px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue-ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* The marker pen: behind ink words only, as in the app. */
+.marked {
+  background: var(--color-highlight);
+  border-radius: 0.18em;
+  padding: 0 0.14em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/*
+ * Things come up into place as they are scrolled to: the same short rise the app's screens use.
+ * The resting state is the visible one, so a page that never runs its script still reads.
+ */
+.reveal {
+  transition:
+    opacity 0.7s var(--ease-settle),
+    transform 0.7s var(--ease-settle);
+  transition-delay: var(--delay, 0ms);
+}
+
+.reveal[data-shown="false"] {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+/* The scanner's line of light: down the code and back, for ever. */
+.scan-beam {
+  top: 0;
+  animation: scan 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+/* What the line has just passed over stays lit for a moment behind it. */
+.scan-line::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgb(0 143 255 / 0) 0%, rgb(0 143 255 / 0.16) 50%, rgb(0 143 255 / 0) 100%);
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+  animation: scan-glow 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+@keyframes scan {
+  from { top: 0; }
+  to { top: calc(100% - 3px); }
+}
+@keyframes scan-glow {
+  from { background-position: 0 -40%; }
+  to { background-position: 0 140%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-beam, .scan-line::before { animation: none; }
+  .scan-beam { top: 50%; }
+}
+
+/* The hero's glow: a cloud of the app's blue, round on top, densest in its middle and thinning to
+   nothing on every side. It has no edge, so nothing marks where the hero stops. */
+.cloud {
+  background: radial-gradient(
+    ellipse 62% 48% at 50% 50%,
+    var(--color-blue) 0%,
+    var(--color-blue) 22%,
+    rgb(0 143 255 / 0.74) 42%,
+    rgb(0 143 255 / 0.4) 60%,
+    rgb(0 143 255 / 0.14) 80%,
+    rgb(0 143 255 / 0) 100%
+  );
+}
+
+/* The glow from the app's first page: a dome of blue, tallest in the middle, with no edge. */
+.dome {
+  background: radial-gradient(
+    ellipse 78% 100% at 50% 100%,
+    var(--color-blue) 0%,
+    var(--color-blue) 52%,
+    rgb(0 143 255 / 0.72) 64%,
+    rgb(0 143 255 / 0.34) 76%,
+    rgb(0 143 255 / 0.1) 88%,
+    rgb(0 143 255 / 0) 100%
+  );
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, -4px, 0) rotate(var(--turn, 0deg));
+  }
+  to {
+    transform: translate3d(0, 5px, 0) rotate(calc(var(--turn, 0deg) + 5deg));
+  }
+}
+
+.drift {
+  animation: drift var(--pace, 3.2s) ease-in-out infinite alternate;
+  animation-delay: var(--lag, 0s);
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pop-in {
+  animation: pop-in 0.7s var(--ease-settle) both;
+  animation-delay: var(--lag, 0s);
+}
+
+/* The rings of small SKR tokens, turning slowly, each the other way from its neighbour. */
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.skr-ring {
+  animation: turn var(--pace, 60s) linear infinite;
+}
+
+.skr-ring-back {
+  animation-direction: reverse;
+}
+
+/* The logo wall: each row holds its list twice and slides by half its own width. */
+@keyframes logo-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
+.logo-track {
+  animation: logo-slide linear infinite;
+}
+
+.logo-track-reverse {
+  animation-direction: reverse;
+}
+
+.logo-row:hover .logo-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .reveal[data-shown="false"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .drift,
+  .pop-in,
+  .skr-ring,
+  .logo-track {
+    animation: none;
+  }
+}
