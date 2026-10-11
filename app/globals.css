@@ -84,9 +84,10 @@ section[id] {
   transform: translateY(22px);
 }
 
-/* The app's own glow, with the app's own stops (Landing.kt): a dome that is solid blue through
-   its middle and thins out over a long, eased top, so it has no edge. Wider than tall, more so
-   on a phone, as it is in the app. */
+/* The app's own glow, with the app's own stops (Landing.kt): an arch of blue that is tallest in
+   the middle, comes down to both edges of the page, and thins out over a long, eased top, so it
+   has no edge. It is as wide as the page or wider, so along its bottom it is solid blue from one
+   side to the other. */
 .glow {
   background: radial-gradient(
     ellipse 108% 100% at 50% 100%,
@@ -105,7 +106,7 @@ section[id] {
 @media (min-width: 768px) {
   .glow {
     background: radial-gradient(
-      ellipse 72% 100% at 50% 100%,
+      ellipse 100% 100% at 50% 100%,
       var(--color-blue) 0%,
       var(--color-blue) 52%,
       rgb(0 143 255 / 0.9) 58%,
@@ -119,17 +120,18 @@ section[id] {
     );
   }
 }
-/* Under the glow: the same dome, turned over, so the blue thins out downwards into the next
-   section the way it thins out upwards into the page. */
+/* Under the glow the blue runs straight down and thins out into the white of the next section:
+   a level fade, the same from one side of the page to the other, with no curve to it. */
 .glow-tail {
-  /* The same stops as the glow, so along the line where the two meet they are the same colour
-     at every point and no seam shows. */
-  background: radial-gradient(ellipse 108% 100% at 50% 0%, var(--color-blue) 0%, var(--color-blue) 52%, rgb(0 143 255 / 0.9) 58%, rgb(0 143 255 / 0.72) 64%, rgb(0 143 255 / 0.52) 70%, rgb(0 143 255 / 0.34) 76%, rgb(0 143 255 / 0.2) 82%, rgb(0 143 255 / 0.1) 88%, rgb(0 143 255 / 0.035) 94%, rgb(0 143 255 / 0) 100%);
-}
-@media (min-width: 768px) {
-  .glow-tail {
-    background: radial-gradient(ellipse 72% 100% at 50% 0%, var(--color-blue) 0%, var(--color-blue) 52%, rgb(0 143 255 / 0.9) 58%, rgb(0 143 255 / 0.72) 64%, rgb(0 143 255 / 0.52) 70%, rgb(0 143 255 / 0.34) 76%, rgb(0 143 255 / 0.2) 82%, rgb(0 143 255 / 0.1) 88%, rgb(0 143 255 / 0.035) 94%, rgb(0 143 255 / 0) 100%);
-  }
+  background: linear-gradient(
+    to bottom,
+    var(--color-blue) 0%,
+    rgb(0 143 255 / 0.74) 22%,
+    rgb(0 143 255 / 0.46) 42%,
+    rgb(0 143 255 / 0.22) 62%,
+    rgb(0 143 255 / 0.07) 82%,
+    rgb(0 143 255 / 0) 100%
+  );
 }
 
 /* The SKR coins turn over in order under the pointer: the big one, the inner ring, the outer
