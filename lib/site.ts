@@ -9,4 +9,5 @@ export const site = {
   appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/Fahad-Dezloper/AirPay/releases/latest/download/AirPay.apk",
   url: "https://airpayy.com",
   repoUrl: "https://github.com/Fahad-Dezloper/AirPay",
+  twitterUrl: "https://x.com/airpayhq",
 };
