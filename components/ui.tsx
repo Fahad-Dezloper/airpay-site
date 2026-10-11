@@ -24,12 +24,12 @@ export function Marked({ children }: { children: ReactNode }) {
 }
 
 const pill =
-  "inline-flex h-[60px] items-center justify-center rounded-full px-8 text-[19px] font-bold tracking-[-0.2px] transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-[0.97]";
+  "inline-flex h-[60px] items-center justify-center rounded-full px-8 text-[19px] font-bold tracking-[-0.2px]";
 
 /** The app's own button: bright blue, white words at 19 bold, which is the size white on that blue needs. */
 export function PrimaryButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a href={href} className={`${pill} bg-blue text-white shadow-[0_10px_24px_-8px_rgba(0,143,255,0.7)]`}>
+    <a href={href} className={`${pill} bg-blue text-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]`}>
       {children}
     </a>
   );
@@ -38,7 +38,7 @@ export function PrimaryButton({ href, children }: { href: string; children: Reac
 /** The second choice: an outline, in ink. */
 export function SecondaryButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a href={href} className={`${pill} border-[1.5px] border-line bg-white text-ink hover:border-ink`}>
+    <a href={href} className={`${pill} border-[1.5px] border-line bg-white text-ink shadow-[0_3px_10px_rgb(0,0,0,0.2)]`}>
       {children}
     </a>
   );

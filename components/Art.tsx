@@ -68,10 +68,45 @@ export function UseArt({ index, className = "" }: { index: number; className?: s
   );
 }
 
-export type ScrapKind = "star" | "spark" | "coin" | "arrow" | "heart" | "shield" | "flower" | "lock" | "gift" | "wallet" | "bag" | "skr";
+export type ScrapKind =
+  | "star" | "spark" | "coin" | "arrow" | "heart" | "shield" | "flower" | "lock" | "gift" | "wallet" | "bag" | "skr"
+  // What the app does, as pieces (2026-10-11): each one a thing a person does in AirPay.
+  | "send" | "scan" | "tick" | "loading" | "chat" | "tap" | "card" | "receipt" | "bell" | "qr";
+
+/** Every piece with the pigment it is usually drawn in: the list `/art` shows, in this order. */
+export const SCRAPS: { kind: ScrapKind; colour: string; label: string }[] = [
+  { kind: "send", colour: "#008fff", label: "Send" },
+  { kind: "scan", colour: "#008fff", label: "Scanner" },
+  { kind: "wallet", colour: "#008fff", label: "Wallet" },
+  { kind: "tick", colour: "#14b866", label: "Done" },
+  { kind: "loading", colour: "#008fff", label: "Loading" },
+  { kind: "chat", colour: "#14b866", label: "Ask" },
+  { kind: "tap", colour: "#008fff", label: "Tap" },
+  { kind: "card", colour: "#ff6a2b", label: "Card" },
+  { kind: "receipt", colour: "#ffc53d", label: "Receipt" },
+  { kind: "bell", colour: "#ffc53d", label: "Alert" },
+  { kind: "qr", colour: "#343433", label: "Code" },
+  { kind: "coin", colour: "#ffc53d", label: "Coin" },
+  { kind: "shield", colour: "#008fff", label: "Safe" },
+  { kind: "lock", colour: "#ffc53d", label: "Lock" },
+  { kind: "gift", colour: "#ff4f7b", label: "Reward" },
+  { kind: "bag", colour: "#ff6a2b", label: "Shop" },
+  { kind: "heart", colour: "#ff4f7b", label: "Heart" },
+  { kind: "flower", colour: "#7cc4ff", label: "Flower" },
+  { kind: "arrow", colour: "#14b866", label: "Arrow" },
+  { kind: "star", colour: "#ffc53d", label: "Star" },
+  { kind: "spark", colour: "#ffc53d", label: "Spark" },
+  { kind: "skr", colour: "#343433", label: "SKR" },
+];
+
+/** Shade on a piece: the same shape again in thin black, so it darkens whatever pigment is under it. */
+const SHADE = { fill: "#000000", fillOpacity: 0.18 } as const;
 
 /** One scattered piece. Fills the box it is given; `colour` is its main pigment. */
 export function Scrap({ kind, colour }: { kind: ScrapKind; colour: string }) {
+  // What is drawn *on* the pigment: white, unless the piece is itself white (as on the blue
+  // ground), where the detail takes the brand's blue so it does not vanish.
+  const on = colour.toLowerCase() === "#ffffff" ? "#008fff" : "#ffffff";
   return (
     <svg viewBox="-100 -100 200 200" className="h-full w-full overflow-visible" aria-hidden>
       {(kind === "star" || kind === "spark") && (
@@ -119,11 +154,11 @@ export function Scrap({ kind, colour }: { kind: ScrapKind; colour: string }) {
           <path
             d="M0,-74 Q32,-53 65,-55 C70,15 43,56 0,76 C-43,56 -70,15 -65,-55 Q-32,-53 0,-74 Z"
             fill="none"
-            stroke="#ffffff"
+            stroke={on}
             strokeOpacity="0.4"
             strokeWidth="7"
           />
-          <path d="M-34,-2 L-8,26 L38,-30" fill="none" stroke="#ffffff" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M-34,-2 L-8,26 L38,-30" fill="none" stroke={on} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
         </g>
       )}
       {kind === "flower" && (
@@ -158,18 +193,141 @@ export function Scrap({ kind, colour }: { kind: ScrapKind; colour: string }) {
       {kind === "bag" && (
         // The shopping bag from the app's first page, in colour: the body, its handle and a smile.
         <g fill="none" strokeLinecap="round">
-          <path d="M-40,-40 A40,44 0 0 1 40,-40" stroke="#c94a12" strokeWidth="16" />
+          <path d="M-40,-40 A40,44 0 0 1 40,-40" stroke={colour} strokeWidth="16" />
+          <path d="M-40,-40 A40,44 0 0 1 40,-40" stroke="#000000" strokeOpacity="0.2" strokeWidth="16" />
           <rect x="-82" y="-44" width="164" height="140" rx="26" fill={colour} />
-          <rect x="-82" y="-44" width="164" height="34" rx="17" fill="#ffffff" fillOpacity="0.22" />
-          <path d="M-36,14 A40,34 0 0 0 36,14" stroke="#ffffff" strokeWidth="14" />
+          <rect x="-82" y="-44" width="164" height="34" rx="17" fill={on} fillOpacity="0.16" />
+          <path d="M-36,14 A40,34 0 0 0 36,14" stroke={on} strokeWidth="14" />
         </g>
       )}
       {kind === "wallet" && (
+        // A wallet, closed: the back panel standing a little proud of the front, a band of light
+        // along the top, and the strap with its gold stud.
         <g>
-          <rect x="-90" y="-66" width="180" height="136" rx="28" fill="#4aa8f5" />
-          <rect x="-90" y="-66" width="180" height="70" rx="28" fill={colour} />
-          <rect x="20" y="-20" width="84" height="50" rx="25" fill={colour} />
-          <circle cx="50" cy="5" r="14" fill="#ffc53d" />
+          <rect x="-80" y="-84" width="150" height="70" rx="24" fill={colour} />
+          <rect x="-80" y="-84" width="150" height="70" rx="24" {...SHADE} />
+          <rect x="-92" y="-58" width="184" height="134" rx="30" fill={colour} />
+          <rect x="-92" y="-58" width="184" height="30" rx="15" fill="#ffffff" fillOpacity="0.22" />
+          <rect x="26" y="-16" width="80" height="50" rx="25" fill={colour} />
+          <rect x="26" y="-16" width="80" height="50" rx="25" {...SHADE} />
+          <circle cx="56" cy="9" r="13" fill="#ffc53d" />
+        </g>
+      )}
+      {kind === "send" && (
+        // A paper plane, nose up and to the right, the under wing in shade, two dashes of air behind.
+        <g>
+          <g stroke={colour} strokeOpacity="0.4" strokeWidth="14" strokeLinecap="round">
+            <line x1="-78" y1="62" x2="-52" y2="40" />
+            <line x1="-46" y1="94" x2="-28" y2="76" />
+          </g>
+          <g strokeLinejoin="round" strokeWidth="10">
+            <polygon points="96,-90 10,98 -16,22" fill={colour} stroke={colour} />
+            <polygon points="96,-90 10,98 -16,22" {...SHADE} />
+            <polygon points="96,-90 -98,-12 -16,22" fill={colour} stroke={colour} />
+          </g>
+        </g>
+      )}
+      {kind === "scan" && (
+        // The scanner: a tile, the four corners of its frame, and the line of light across it.
+        <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="-92" y="-92" width="184" height="184" rx="46" fill={colour} />
+          <g stroke={on} strokeWidth="16">
+            <path d="M-52,-22 V-36 A16,16 0 0 1 -36,-52 H-22" />
+            <path d="M22,-52 H36 A16,16 0 0 1 52,-36 V-22" />
+            <path d="M52,22 V36 A16,16 0 0 1 36,52 H22" />
+            <path d="M-22,52 H-36 A16,16 0 0 1 -52,36 V22" />
+          </g>
+          <line x1="-66" y1="0" x2="66" y2="0" stroke={on} strokeOpacity="0.55" strokeWidth="15" />
+        </g>
+      )}
+      {kind === "tick" && (
+        // Done: a disc with a fat tick, and a lick of light on its shoulder.
+        <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <circle r="96" fill={colour} />
+          <path d="M-74,-30 A80,80 0 0 1 -30,-74" stroke={on} strokeOpacity="0.35" strokeWidth="12" />
+          <path d="M-42,4 L-12,34 L44,-30" stroke={on} strokeWidth="27" />
+        </g>
+      )}
+      {kind === "loading" && (
+        // Working on it: a pale ring and a quarter of it in full colour, going round (`.scrap-spin`
+        // in globals.css; still under reduced motion). The origin of this box is its middle.
+        <g fill="none" stroke={colour} strokeWidth="30" strokeLinecap="round">
+          <circle r="76" strokeOpacity="0.2" />
+          <path className="scrap-spin" d="M0,-76 A76,76 0 0 1 76,0" />
+        </g>
+      )}
+      {kind === "chat" && (
+        // Ask: a speech bubble with its tail, and three dots.
+        <g>
+          <path d="M-50,38 L-64,90 L-6,46 Z" fill={colour} stroke={colour} strokeWidth="10" strokeLinejoin="round" />
+          <rect x="-96" y="-74" width="192" height="126" rx="63" fill={colour} />
+          <circle cx="-46" cy="-11" r="14" fill={on} />
+          <circle cx="0" cy="-11" r="14" fill={on} />
+          <circle cx="46" cy="-11" r="14" fill={on} />
+        </g>
+      )}
+      {kind === "tap" && (
+        // Tap: the radio reaching out from a point, each wave fainter than the last.
+        <g fill="none" stroke={colour} strokeWidth="26" strokeLinecap="round">
+          <circle cx="-70" cy="0" r="20" fill={colour} stroke="none" />
+          <path d="M-26.9,-38.8 A58,58 0 0 1 -26.9,38.8" />
+          <path d="M4.3,-66.9 A100,100 0 0 1 4.3,66.9" strokeOpacity="0.7" />
+          <path d="M34,-93.7 A140,140 0 0 1 34,93.7" strokeOpacity="0.42" />
+        </g>
+      )}
+      {kind === "card" && (
+        // A card: its dark stripe, a gold chip, and a line of print.
+        <g>
+          <rect x="-96" y="-62" width="192" height="124" rx="24" fill={colour} />
+          <rect x="-96" y="-36" width="192" height="28" {...SHADE} fillOpacity="0.26" />
+          <rect x="-70" y="12" width="44" height="30" rx="8" fill="#ffc53d" />
+          <line x1="8" y1="27" x2="64" y2="27" stroke={on} strokeOpacity="0.85" strokeWidth="12" strokeLinecap="round" />
+        </g>
+      )}
+      {kind === "receipt" && (
+        // A receipt with a torn foot and three lines of print.
+        <g>
+          <path
+            d="M-70,-74 Q-70,-92 -52,-92 L52,-92 Q70,-92 70,-74 L70,90 L46.7,72 L23.3,90 L0,72 L-23.3,90 L-46.7,72 L-70,90 Z"
+            fill={colour}
+          />
+          <g stroke={on} strokeWidth="13" strokeLinecap="round">
+            <line x1="-42" y1="-54" x2="42" y2="-54" />
+            <line x1="-42" y1="-20" x2="42" y2="-20" />
+            <line x1="-42" y1="14" x2="4" y2="14" />
+          </g>
+        </g>
+      )}
+      {kind === "bell" && (
+        // A bell with something to say: the clapper in shade, and a red dot on its shoulder.
+        <g>
+          <path d="M-26,66 A26,26 0 0 0 26,66 Z" fill={colour} />
+          <path d="M-26,66 A26,26 0 0 0 26,66 Z" {...SHADE} fillOpacity="0.3" />
+          <circle cy="-82" r="13" fill={colour} />
+          <path
+            d="M0,-76 C-48,-76 -62,-38 -62,4 C-62,32 -72,42 -82,54 L82,54 C72,42 62,32 62,4 C62,-38 48,-76 0,-76 Z"
+            fill={colour}
+            stroke={colour}
+            strokeWidth="12"
+            strokeLinejoin="round"
+          />
+          <circle cx="56" cy="-54" r="24" fill="#ff4f7b" stroke="#ffffff" strokeWidth="9" />
+        </g>
+      )}
+      {kind === "qr" && (
+        // A code to scan: three finder squares and a few loose blocks in the fourth corner.
+        <g>
+          {[[-90, -90], [14, -90], [-90, 14]].map(([x, y]) => (
+            <g key={`${x},${y}`}>
+              <rect x={x} y={y} width="76" height="76" rx="20" fill={colour} />
+              <rect x={x + 17} y={y + 17} width="42" height="42" rx="9" fill={on} />
+              <rect x={x + 28} y={y + 28} width="20" height="20" rx="5" fill={colour} />
+            </g>
+          ))}
+          <rect x="16" y="16" width="30" height="30" rx="9" fill={colour} />
+          <rect x="60" y="60" width="30" height="30" rx="9" fill={colour} />
+          <rect x="62" y="18" width="24" height="24" rx="8" fill={colour} fillOpacity="0.45" />
+          <rect x="18" y="62" width="24" height="24" rx="8" fill={colour} fillOpacity="0.45" />
         </g>
       )}
     </svg>

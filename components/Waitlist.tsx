@@ -43,7 +43,7 @@ export function Waitlist() {
 
   if (state === "done") {
     return (
-      <p role="status" className="inline-flex h-[60px] items-center gap-2.5 rounded-full bg-white px-7 text-[17px] font-bold text-ink shadow-[0_14px_34px_-16px_rgba(0,60,120,0.5)]">
+      <p role="status" className="inline-flex h-[60px] items-center gap-2.5 rounded-full bg-white px-7 text-[17px] font-bold text-ink shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
         <span className="grid h-6 w-6 place-items-center rounded-full bg-success text-white">
           <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M5 13l4.5 4.5L19 7" />
@@ -56,7 +56,10 @@ export function Waitlist() {
 
   return (
     <form onSubmit={submit} noValidate className="flex w-full max-w-[480px] flex-col items-center gap-3">
-      <div className="flex h-[60px] w-full items-center rounded-full bg-white pl-6 pr-1.5 shadow-[0_14px_34px_-16px_rgba(0,60,120,0.5)] ring-1 ring-line focus-within:ring-2 focus-within:ring-blue">
+      {/* One plain shadow that carries its own hairline edge. Focus is shown here, on the pill, by
+          that hairline turning blue — the field inside draws no outline of its own, because the
+          page's `:focus-visible` rule would put a tall offset box round it. */}
+      <div className="flex h-[60px] w-full items-center rounded-full bg-white pl-5 pr-1.5 sm:pl-6 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] focus-within:shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1.5px_#008fff]">
         <label htmlFor="waitlist-email" className="sr-only">Your email address</label>
         <input
           id="waitlist-email"
@@ -66,12 +69,14 @@ export function Waitlist() {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); if (state === "error") setState("idle"); }}
-          className="h-full min-w-0 flex-1 bg-transparent text-[17px] font-medium text-ink outline-none placeholder:text-quiet"
+          // Inline, not a class: globals.css's `:focus-visible` is unlayered and beats a utility.
+          style={{ outline: "none" }}
+          className="h-full min-w-0 flex-1 bg-transparent text-[16px] font-medium sm:text-[17px] text-ink placeholder:text-quiet"
         />
         <button
           type="submit"
           disabled={state === "sending"}
-          className="h-12 shrink-0 rounded-full bg-blue px-6 text-[16px] font-bold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97] disabled:opacity-70"
+          className="h-12 shrink-0 cursor-pointer rounded-full bg-blue px-4 text-[15px] font-bold text-white sm:px-6 sm:text-[16px] disabled:cursor-default disabled:opacity-70"
         >
           {state === "sending" ? "Sending" : "Get early access"}
         </button>

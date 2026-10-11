@@ -74,7 +74,7 @@ function KitButton({ light = false }: { light?: boolean }) {
     <a
       href={KIT}
       download
-      className={`inline-flex h-[60px] items-center justify-center gap-2.5 rounded-full px-8 text-[19px] font-bold transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97] ${light ? "bg-white text-blue-ink" : "bg-blue text-white shadow-[0_10px_24px_-8px_rgba(0,143,255,0.7)]"}`}
+      className={`inline-flex h-[60px] items-center justify-center gap-2.5 rounded-full px-8 text-[19px] font-bold shadow-[0_3px_10px_rgb(0,0,0,0.2)] ${light ? "bg-white text-blue-ink" : "bg-blue text-white"}`}
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="M12 4v11m0 0l-4.500-4.500M12 15l4.500-4.500M5 19.500h14" />

@@ -1,16 +1,20 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Container, Eyebrow, Heading, Marked, Phone, WalletMarks } from "@/components/ui";
-import { Scrap, USES, UseArt, type ScrapKind } from "@/components/Art";
+import { Container, Eyebrow, Heading, Marked, Phone, PrimaryButton, SecondaryButton } from "@/components/ui";
+import { Scrap, type ScrapKind } from "@/components/Art";
 import { HeroStage } from "@/components/HeroStage";
+import { Morph, type MorphItem } from "@/components/Morph";
 import { LogoWall } from "@/components/LogoWall";
 import { Reveal } from "@/components/Reveal";
 import { serviceCounts } from "@/lib/catalogue";
 import { Footer, Header } from "@/components/Chrome";
 import { site } from "@/lib/site";
 import { Waitlist } from "@/components/Waitlist";
-import { QrArt } from "@/components/QrArt";
-import { SkrCoins } from "@/components/SkrCoins";
+import { OffersList } from "@/components/OffersList";
+import { OneQr } from "@/components/OneQr";
+import { Beam, PHONE_SHARE, SeekerBack } from "@/components/SeekerBeam";
+import { PayAnyone } from "@/components/PayAnyone";
+import { Secure } from "@/components/Secure";
 
 export default function Home() {
   return (
@@ -18,13 +22,15 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <Gap />
         <Does />
         <Services />
         <Duo />
-        <Safe />
+        {/* Taken off the page 2026-10-11 at the user's word; the sections are still below.
+        <Secure />
         <Next />
         <Team />
+        */}
+        <Faq />
         <GetTheApp />
       </main>
       <Footer />
@@ -33,48 +39,129 @@ export default function Home() {
 }
 
 /**
- * What stands to the right of the headline on a wide screen: the four things AirPay is for, as
- * the app draws them, at different sizes on soft discs, with a few small pieces between them.
- * Positions are percentages of the cluster's own box. Decoration: the headline says it in words.
+ * The hero (2026-10-11): the headline alone in the middle, and either side of it one drawing on
+ * a soft grey tile that keeps becoming the next (`Morph`, the moving mark from the app's first
+ * page), with a ring of small stars round it, running off the edge of the page.
+ *
+ * The left mark goes through what a person does with AirPay; the right one through why it
+ * works for them. Every drawing is one the app itself uses. Decoration: the headline says it.
+ *
+ * Kept to blue and greys: the brand's blue, near-black and a slate grey for the drawings (and
+ * the coin's own gold), a lighter blue and a pale grey for the stars.
  */
-const CLUSTER: (
-  | { use: number; left: string; top: string; size: string; pace: number }
-  | { kind: ScrapKind; colour: string; left: string; top: string; size: string; turn: number; pace: number }
-)[] = [
-  { use: 1, left: "30%", top: "30%", size: "34%", pace: 4.2 },
-  { use: 3, left: "74%", top: "24%", size: "26%", pace: 3.6 },
-  { use: 2, left: "66%", top: "66%", size: "32%", pace: 4.6 },
-  { use: 4, left: "24%", top: "74%", size: "24%", pace: 3.9 },
-  { kind: "shield", colour: "#008fff", left: "52%", top: "44%", size: "15%", turn: 8, pace: 4.3 },
-  { kind: "gift", colour: "#ff4f7b", left: "90%", top: "48%", size: "15%", turn: 8, pace: 3.5 },
-  { kind: "coin", colour: "#ffc53d", left: "50%", top: "9%", size: "13%", turn: -12, pace: 3.3 },
-  { kind: "star", colour: "#ffc53d", left: "8%", top: "50%", size: "8%", turn: -8, pace: 2.8 },
-  { kind: "star", colour: "#ffc53d", left: "46%", top: "90%", size: "9%", turn: 10, pace: 3.1 },
-  { kind: "spark", colour: "#ffc53d", left: "92%", top: "84%", size: "6%", turn: 0, pace: 3.4 },
-  { kind: "spark", colour: "#ffc53d", left: "10%", top: "10%", size: "6%", turn: 0, pace: 3.0 },
+type Piece =
+  | { kind: ScrapKind; colour: string; x: number; y: number; size: number; turn?: number; pace?: number }
+  | { dot: string; x: number; y: number; size: number };
+
+const BLUE = "#008fff";
+const INK = "#343433";
+const SLATE = "#8e99a8";
+/** The stars' two: a blue lighter and softer than the brand's, and a pale grey. */
+const STAR_BLUE = "#57b4ff";
+const STAR_GREY = "#d3d8df";
+
+/**
+ * The two lists, read side by side. The marks take turns on one clock: the left goes to its next
+ * row, then the right goes to its next row. So what is on screen together is either row N with
+ * row N, or left row N+1 with right row N — and in neither case may the two share a drawing or a
+ * colour.
+ *
+ * That is why there are three colours going round in threes. On the left: blue, ink, slate,
+ * repeating. On the right each row takes the one colour that is neither its left neighbour's
+ * nor the next left row's, which works out to slate, blue, ink, repeating — and neither side
+ * then shows one colour twice running. It only closes up if the lists are a multiple of three
+ * long, and the same length. The SKR token is its own black, so it sits in an ink row; the coin
+ * is gold, which matches nothing.
+ */
+/** What you do with it. */
+const DOES: MorphItem[] = [
+  { label: "Pay bills", kind: "receipt", colour: BLUE },
+  { label: "Pay anyone", kind: "send", colour: INK },
+  { label: "Shop", kind: "bag", colour: SLATE },
+  { label: "Scan to pay", kind: "scan", colour: BLUE, cover: 0.56 },
+  { label: "Ask for money", kind: "chat", colour: INK },
+  { label: "Your pay code", kind: "qr", colour: SLATE, cover: 0.48 },
 ];
 
-/** The soft discs behind a cluster, so the pieces sit on something and do not float on bare white. */
-const PADS = [
-  { left: "34%", top: "34%", size: "58%" },
-  { left: "70%", top: "64%", size: "50%" },
+/** Why it works for you. */
+const WORKS: MorphItem[] = [
+  { label: "Tap to pay", kind: "tap", colour: SLATE, cover: 0.46 },
+  { label: "Any wallet", kind: "wallet", colour: BLUE },
+  { label: "Earn SKR", kind: "skr", colour: INK, cover: 0.6 },
+  { label: "Keys stay yours", kind: "shield", colour: SLATE },
+  { label: "Paid", kind: "tick", colour: BLUE },
+  { label: "USDC or SOL", kind: "coin", colour: "#ffc53d", cover: 0.5 },
 ];
+
+/**
+ * The stars round the left tile (which sits at 46, 47): one ring, larger at the top and the two
+ * lower corners, smaller between, blue and grey alternating as it goes round, and three specks.
+ * Nothing sits under the tile, where its word is. The right side is this, mirrored.
+ */
+const LOOSE_LEFT: Piece[] = [
+  { kind: "star", colour: STAR_BLUE, x: 46, y: 5, size: 7, turn: 0, pace: 3.0 },
+  { kind: "spark", colour: STAR_GREY, x: 80, y: 13, size: 5, pace: 3.4 },
+  { kind: "star", colour: STAR_BLUE, x: 87, y: 44, size: 5, turn: 8, pace: 2.8 },
+  { kind: "spark", colour: STAR_GREY, x: 86, y: 76, size: 5, pace: 3.2 },
+  { kind: "star", colour: STAR_GREY, x: 46, y: 97, size: 5, turn: -6, pace: 3.6 },
+  { kind: "star", colour: STAR_BLUE, x: 10, y: 80, size: 7, turn: -8, pace: 3.1 },
+  { kind: "spark", colour: STAR_GREY, x: 3, y: 44, size: 5, pace: 2.9 },
+  { kind: "star", colour: STAR_GREY, x: 14, y: 14, size: 5.5, turn: 8, pace: 3.3 },
+  { dot: STAR_GREY, x: 64, y: 3, size: 2.2 },
+  { dot: STAR_BLUE, x: 90, y: 60, size: 2.2 },
+  { dot: STAR_BLUE, x: 2, y: 26, size: 2.2 },
+];
+
+const LOOSE_RIGHT: Piece[] = LOOSE_LEFT.map((p) => ({ ...p, x: 100 - p.x, ...("turn" in p && p.turn ? { turn: -p.turn } : {}) }));
+
+/** The loose pieces of one group, filling the box it is given. */
+function Loose({ pieces }: { pieces: Piece[] }) {
+  return (
+    <>
+      {pieces.map((c, i) => (
+        <div key={i} className="absolute aspect-square -translate-x-1/2 -translate-y-1/2" style={{ left: `${c.x}%`, top: `${c.y}%`, width: `${c.size}%` }}>
+          <div className="pop-in h-full w-full" style={{ ["--lag" as string]: `${0.1 + i * 0.04}s` }}>
+            {"dot" in c ? (
+              <div className="h-full w-full rounded-full" style={{ background: c.dot }} />
+            ) : (
+              <div className="drift h-full w-full" style={{ ["--turn" as string]: `${c.turn ?? 0}deg`, ["--pace" as string]: `${c.pace ?? 3.2}s`, ["--lag" as string]: `${-i * 0.5}s` }}>
+                <Scrap kind={c.kind} colour={c.colour} />
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
 
 function Hero() {
-  // No glow and no colour behind it: white, the line in the middle, and the app's own drawings
-  // either side of it on a wide screen. On a phone the moving mark sits above the line.
+  // White, the line in the middle in a plain medium weight with nothing behind it, and a moving
+  // mark either side with a few loose pieces round it. On a phone there is no room for two: the
+  // app's own moving mark sits above the line instead.
   return (
     <section id="top" className="relative overflow-hidden bg-white">
-      <div className="mx-auto grid min-h-[min(92svh,860px)] w-full max-w-[1560px] items-center gap-6 px-5 pb-12 pt-[104px] lg:grid-cols-[1fr_minmax(480px,620px)_1fr] lg:gap-6 lg:pb-16">
-        {/* Left: the mark that keeps becoming the next thing AirPay is for. */}
-        <div className="relative mx-auto w-[min(70vw,300px)] lg:w-[min(100%,330px)]">
-          <div aria-hidden className="absolute left-1/2 top-[46%] hidden aspect-square w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f4f2ee] lg:block" />
+      <div aria-hidden className="pointer-events-none absolute left-[-2%] top-[52%] hidden aspect-[1/1.04] w-[30%] max-w-[600px] -translate-y-1/2 lg:block xl:w-[32%]">
+        <Loose pieces={LOOSE_LEFT} />
+        <div className="absolute left-[46%] top-[47%] w-[46%] -translate-x-1/2 -translate-y-1/2">
+          <Morph items={DOES} />
+        </div>
+      </div>
+      <div aria-hidden className="pointer-events-none absolute right-[-2%] top-[52%] hidden aspect-[1/1.04] w-[30%] max-w-[600px] -translate-y-1/2 lg:block xl:w-[32%]">
+        <Loose pieces={LOOSE_RIGHT} />
+        <div className="absolute left-[54%] top-[47%] w-[46%] -translate-x-1/2 -translate-y-1/2">
+          <Morph items={WORKS} turn={1} />
+        </div>
+      </div>
+
+      <div className="relative mx-auto flex min-h-[min(92svh,860px)] w-full max-w-[1560px] flex-col items-center justify-center gap-6 px-5 pb-12 pt-[104px] lg:pb-16">
+        <div className="relative mx-auto w-[min(70vw,300px)] lg:hidden">
           <HeroStage four={false} />
         </div>
 
-        <div className="flex flex-col items-center text-center">
-          <h1 className="text-[clamp(38px,10.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em] lg:text-[clamp(56px,5.6vw,88px)]">
-            Crypto you can <Marked>actually spend.</Marked>
+        <div className="flex max-w-[640px] flex-col items-center text-center">
+          <h1 className="text-[clamp(38px,10.5vw,84px)] font-medium leading-[1.06] tracking-[-0.04em] lg:text-[clamp(52px,5.2vw,88px)]">
+            Crypto you can actually spend.
           </h1>
           <p className="mt-6 max-w-[460px] text-[19px] leading-[1.5] text-quiet">
             Recharge, pay bills, shop and pay people, straight from the wallets you already have.
@@ -83,81 +170,7 @@ function Hero() {
             <Waitlist />
           </div>
         </div>
-
-        {/* Right: what it is for, as a handful of the app's drawings. */}
-        <div aria-hidden className="relative mx-auto hidden aspect-square w-[min(100%,360px)] lg:block">
-          {PADS.map((p, i) => (
-            <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f4f2ee]" style={{ left: p.left, top: p.top, width: p.size, aspectRatio: "1" }} />
-          ))}
-          {CLUSTER.map((c, i) => (
-            <div key={i} className="absolute aspect-square -translate-x-1/2 -translate-y-1/2" style={{ left: c.left, top: c.top, width: c.size }}>
-              <div className="pop-in h-full w-full" style={{ ["--lag" as string]: `${0.15 + i * 0.06}s` }}>
-                {"use" in c ? (
-                  <div className="drift grid h-full w-full place-items-center rounded-full" style={{ background: USES[c.use].ground, ["--pace" as string]: `${c.pace}s`, ["--lag" as string]: `${-i * 0.5}s` }}>
-                    <UseArt index={c.use} className={c.use === 4 ? "h-[74%] w-[74%]" : "h-[56%] w-[56%]"} />
-                  </div>
-                ) : (
-                  <div className="drift h-full w-full" style={{ ["--turn" as string]: `${c.turn}deg`, ["--pace" as string]: `${c.pace}s`, ["--lag" as string]: `${-i * 0.5}s` }}>
-                    <Scrap kind={c.kind} colour={c.colour} />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
-    </section>
-  );
-}
-
-/**
- * Why it exists, in one look: a picture, one line, two sentences. Short on purpose; the grid
- * under it is where the detail is.
- */
-function Gap() {
-  return (
-    <section className="relative z-10 bg-white">
-      <Container className="grid items-center gap-10 py-16 md:grid-cols-[1.05fr_1fr] md:gap-16 md:py-24">
-        <Reveal className="grid grid-cols-2 gap-3 rounded-[32px] bg-night p-4 md:p-5" >
-          <div className="rounded-[22px] bg-[#16191f] p-5">
-            <p className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#8a93a0]">A wallet today</p>
-            <p className="mt-5 font-figure text-[30px] font-extrabold leading-none text-[#5d6672] md:text-[38px]">$1,204</p>
-            <p className="mt-1.5 text-[13px] font-medium text-[#5d6672]">+2.4% today</p>
-            <div className="mt-5 grid grid-cols-2 gap-2">
-              {["Send", "Swap", "Receive", "Buy"].map((b) => (
-                <span key={b} className="grid h-9 place-items-center rounded-xl bg-[#1f232b] text-[12px] font-medium text-[#5d6672]">{b}</span>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-[22px] bg-white p-5">
-            <p className="text-[12px] font-bold uppercase tracking-[1.5px] text-quiet">AirPay</p>
-            <p className="mt-5 text-[19px] font-bold leading-[1.15] tracking-[-0.02em] md:text-[22px]">What do you need to pay for?</p>
-            <ul className="mt-4 space-y-2">
-              {[["Recharge", "#008fff"], ["Bills", "#14b866"], ["Gift cards", "#ff4f7b"], ["People", "#ff6a2b"]].map(([c, dot]) => (
-                <li key={c} className="flex h-9 items-center gap-2.5 rounded-xl border-[1.5px] border-line px-3 text-[13px] font-bold">
-                  <span className="h-2 w-2 rounded-full" style={{ background: dot }} />
-                  {c}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Reveal>
-        <Reveal delay={120}>
-          <h2 className="text-[34px] font-bold leading-[1.08] tracking-[-0.03em] md:text-[48px]">
-            Wallets show what you hold. AirPay shows what you can do.
-          </h2>
-          <p className="mt-5 max-w-[500px] text-[18px] leading-[1.55] text-quiet">
-            A wallet opens on a balance and buttons to trade. Nothing on it pays a bill, so people who earn on-chain
-            still wait days to spend it. AirPay opens on what you can pay for.
-          </p>
-          <a href="#does" className="group mt-6 inline-flex items-center gap-2 text-[17px] font-bold text-blue-ink">
-            See what it does
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden className="transition-transform group-hover:translate-x-1">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.200" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
-        </Reveal>
-      </Container>
     </section>
   );
 }
@@ -167,15 +180,15 @@ function Does() {
   return (
     // On a wide screen the whole section is held to about 1.3 screens: two rows of tiles whose
     // height follows the screen's, so every tile is in view with one short scroll.
-    <section id="does" className="bg-mist">
-      <Container className="py-16 md:py-[6svh]">
+    <section id="does" className="bg-white">
+      <Container className="py-16 md:py-24">
         <Reveal className="mx-auto text-center">
           <Eyebrow>Meet AirPay</Eyebrow>
           <Heading className="mt-3">One app for the things you pay for</Heading>
         </Reveal>
 
-        <div id="does-tiles" className="mt-10 grid scroll-mt-[76px] gap-4 md:mt-[4svh] md:auto-rows-[clamp(330px,48svh,430px)] md:grid-cols-6">
-          <Tile className="md:col-span-4 md:flex-row" delay={0}>
+        <div id="does-tiles" className="mt-10 grid scroll-mt-[76px] gap-4 md:mt-12 md:auto-rows-[clamp(330px,48svh,430px)] md:grid-cols-2 lg:grid-cols-6">
+          <Tile className="md:col-span-2 md:flex-row lg:col-span-4" delay={0}>
             <TileText
               kicker="Everyday essentials"
               title="Pay your bills"
@@ -187,41 +200,21 @@ function Does() {
             </div>
           </Tile>
 
-          <Tile className="md:col-span-2" delay={90}>
+          <Tile className="lg:col-span-2" delay={90}>
             <TileText kicker="All your wallets" title="Every wallet in one place" text="Connect as many wallets as you want. Switch your paying wallet with one click." />
             <div className="mt-4 flex flex-1 items-end justify-center"><WalletPile /></div>
           </Tile>
 
-          <Tile className="md:col-span-2" delay={0}>
+          <Tile className="lg:col-span-2" delay={0}>
             <TileText kicker="Send money" title="Pay anyone" text="Type a name. Every match shows the end of its wallet, so you know who you are paying." />
-            <div className="mt-5 flex flex-1 flex-col justify-end gap-3">
-              {/* The app's own Pay anyone field: the name's registry mark, the name, the end of
-                  the wallet it resolves to, and the button. */}
-              <div className="flex h-[58px] items-center gap-3 rounded-full bg-white pl-2 pr-2 shadow-[0_10px_26px_-16px_rgba(16,18,22,0.45)] ring-1 ring-line">
-                <Image src="/app/brand_seeker.png" alt="" width={80} height={80} className="h-[42px] w-[42px] rounded-full object-cover" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[16px] font-bold leading-tight">maya.skr</span>
-                  <span className="block font-mono text-[12px] leading-tight text-quiet">…q3Fn</span>
-                </span>
-                <span className="grid h-[42px] place-items-center rounded-full bg-blue px-5 text-[15px] font-bold text-white">Pay</span>
-              </div>
-              <div className="flex gap-2">
-                {[
-                  { n: ".skr", el: <Image src="/app/brand_seeker.png" alt="" width={48} height={48} className="h-6 w-6 rounded-full object-cover" /> },
-                  { n: ".sol", el: <Image src="/app/id_sol.png" alt="" width={48} height={48} className="h-6 w-6 rounded-full object-cover" /> },
-                  // eslint-disable-next-line @next/next/no-img-element
-                  { n: ".air", el: <span className="grid h-6 w-6 place-items-center rounded-full bg-blue"><img src="/brand/mark-on-blue.svg" alt="" className="h-[15px] w-[15px] object-contain" /></span> },
-                ].map((r) => (
-                  <span key={r.n} className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-mist text-[15px] font-bold">
-                    {r.el}
-                    {r.n}
-                  </span>
-                ))}
-              </div>
+            {/* The app's own Pay anyone field, going round the three kinds of name; the chips under
+                it choose one. */}
+            <div className="mt-5 flex flex-1 flex-col">
+              <PayAnyone />
             </div>
           </Tile>
 
-          <Tile className="md:col-span-2" delay={90}>
+          <Tile className="lg:col-span-2" delay={90}>
             <TileText kicker="Network fees" title="Forget about SOL" text="You never need SOL to pay. The network fee comes out of the USDC you already hold." />
             {/* The two cases, as two plain cards: what it costs, and when it costs nothing. */}
             <div className="mt-5 flex flex-1 items-end gap-2.5">
@@ -238,29 +231,11 @@ function Does() {
             </div>
           </Tile>
 
-          <Tile className="md:col-span-2" delay={180}>
-            <TileText kicker="Get paid" title="Get paid with a QR code" text="Enter an amount and show the code. The payment lands in your active wallet." />
-            {/* The app's own wallet badge: a white tile for the code on the app's blue, and the
-                wallet it pays under it. The line of light is the other phone reading it. */}
+          <Tile className="lg:col-span-2" delay={180}>
+            <TileText kicker="Get paid" title="One QR for every wallet" text="Share one code. The money lands in your active wallet." />
+            {/* The claim, to try: press a wallet and it becomes the active one; the code stays. */}
             <div className="mt-5 flex flex-1 items-end">
-              <div className="flex w-full items-center gap-3 rounded-[24px] bg-blue p-2">
-                <div className="relative shrink-0 rounded-[18px] bg-white p-2.5">
-                  <QrArt className="h-[104px] w-[104px]" />
-                  <div aria-hidden className="scan-line pointer-events-none absolute inset-2.5">
-                    <div className="scan-beam absolute inset-x-0 h-[3px] rounded-full bg-blue shadow-[0_0_14px_3px_rgba(0,143,255,0.55)]" />
-                  </div>
-                </div>
-                <div className="min-w-0 flex-1 pr-1">
-                  <p className="text-[17px] font-bold leading-tight text-white">Solana wallet</p>
-                  <div className="mt-2.5 flex items-center gap-2 rounded-[14px] bg-white p-2">
-                    <Image src="/app/brand_seeker.png" alt="" width={64} height={64} className="h-8 w-8 rounded-full object-cover" />
-                    <span className="min-w-0">
-                      <span className="block truncate text-[13px] font-bold leading-tight">maya.skr</span>
-                      <span className="block font-mono text-[12px] leading-tight text-quiet">7xKp…q3Fn</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <OneQr />
             </div>
           </Tile>
         </div>
@@ -274,7 +249,7 @@ function Does() {
 /** One tile of the grid: white, rounded, a column unless told otherwise. */
 function Tile({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   return (
-    <Reveal delay={delay} className={`flex min-h-[380px] flex-col overflow-hidden rounded-[32px] bg-white p-7 md:min-h-0 ${className}`}>
+    <Reveal delay={delay} className={`flex min-h-[380px] flex-col overflow-hidden rounded-[32px] bg-mist p-7 md:min-h-0 ${className}`}>
       {children}
     </Reveal>
   );
@@ -310,7 +285,7 @@ function WalletPile() {
   const cards = [
     { name: "Phantom", mark: "phantom", address: "Bq2m…Wd8T", bg: "#9886e5", top: "#ffffff", foot: "#ffffff", usd: "$56.02", active: false },
     { name: "Solflare", mark: "solflare", address: "Hn5v…c9Rz", bg: "#ffef47", top: "#343433", foot: "#343433", usd: "$12.75", active: false },
-    { name: "maya.skr", mark: "seeker", address: "7xKp…q3Fn", bg: "linear-gradient(180deg,#000000 0%,#00090e 22%,#012c3f 42%,#017f9f 62%,#1fcdd3 80%,#86f7e2 100%)", top: "#ffffff", foot: "#16181c", usd: "$128.40", active: true },
+    { name: "dezloper.skr", mark: "seeker", address: "7xKp…q3Fn", bg: "linear-gradient(180deg,#000000 0%,#00090e 22%,#012c3f 42%,#017f9f 62%,#1fcdd3 80%,#86f7e2 100%)", top: "#ffffff", foot: "#16181c", usd: "$128.40", active: true },
   ];
   // Each card stands this far below the one behind it, as a share of a card's own height: enough
   // for the one behind to show its icon and its address.
@@ -346,7 +321,7 @@ function WalletPile() {
 async function Services() {
   const counts = await serviceCounts();
   return (
-    <section id="services" className="overflow-hidden bg-mist py-20 md:py-24">
+    <section id="services" className="overflow-hidden bg-mist py-16 md:py-24">
       <Container>
         <Reveal className="mx-auto flex max-w-[860px] flex-col items-center text-center">
           <Eyebrow>Spend</Eyebrow>
@@ -355,40 +330,98 @@ async function Services() {
           </Heading>
         </Reveal>
       </Container>
-      <Reveal className="mt-12">
+      <Reveal className="mt-10 md:mt-12">
         <LogoWall />
       </Reveal>
     </section>
   );
 }
 
-/** Two boxes side by side: the tap, and what the tap earns. */
+/**
+ * What a Seeker unlocks, shown as coming out of the phone itself (2026-10-11, after the user's
+ * reference): on the white page, a Seeker on its side with light pouring out of its Seed Vault,
+ * and where the light opens out it draws a box — and in that box are the two things, the tap
+ * and the offers only its owners can claim.
+ *
+ * **The whole section fits one screen** on a desktop: its tall parts — the cards and the beam —
+ * are sized from the screen's height, and each card lays its words and its picture side by
+ * side so it can be short. On a phone the cards stack and take the room they need.
+ *
+ * `PHONE_AT` is where the Seeker sits. "top": heading, phone hanging with its Seed Vault edge
+ * down, the light falling into the box. "bottom": heading, box, the light rising out of a phone
+ * at the foot. The phone is `PHONE_SHARE` of the box's width, which is what makes the beam's
+ * foot exactly as wide as the Seed Vault plate.
+ */
+const PHONE_AT: "top" | "bottom" = "bottom";
+
+/** The four things under "Seeker also unlocks": a label, a title and a few lines each. */
+const SEEKER_UNLOCKS: { kicker: string; title: string; text: string }[] = [
+  {
+    kicker: "Offers",
+    title: "Get paid for what you already do",
+    text: "Pay a few different people, buy a gift card, pay a friend by tap. Each one is an offer that only verified Seeker owners can claim, and every offer pays out in SKR.",
+  },
+  {
+    kicker: "Tap to pay",
+    title: "Pay by touching phones",
+    text: "Hold your Seeker near another phone and the pay sheet opens by itself. Pick the wallet, approve, done. There is no address to type and no code to scan.",
+  },
+  {
+    kicker: "Scratch cards",
+    title: "Earn SKR when you pay",
+    text: "A payment from a verified Seeker can drop a scratch card. Scratch it to see what you won, and the SKR lands in your own wallet, not in a balance held by us.",
+  },
+  {
+    kicker: "Free network fees",
+    title: "Hold SKR, pay no gas",
+    text: "Keep 1,000 SKR in your wallet and AirPay covers the network fee on what you send. You never need to keep SOL around just to make a payment.",
+  },
+];
+
 function Duo() {
+  const top = PHONE_AT === "top";
+  const phone = <SeekerBack hang={top} className="relative z-10 mx-auto block" />;
+  const fade = `linear-gradient(${top ? "to bottom" : "to top"}, #000 35%, transparent 96%)`;
+  const beam = (
+    <div className={top ? "mb-0" : "mt-10"} style={{ maskImage: fade, WebkitMaskImage: fade }}>
+      <Beam down={top} className="relative block h-[clamp(130px,20svh,210px)] w-full" />
+    </div>
+  );
   return (
-    <section id="earn">
+    <section id="earn" className="bg-white">
       <Container className="py-16 md:py-24">
         <Reveal className="mx-auto text-center">
           <Eyebrow>For Seeker owners</Eyebrow>
           <Heading className="mt-3">Seeker also unlocks</Heading>
         </Reveal>
 
-        <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
-          <Reveal className="flex min-h-[600px] flex-col overflow-hidden rounded-[36px] bg-[#e9f4ff] p-7 md:p-10">
-            <p className="w-fit rounded-full bg-blue px-4 py-1.5 text-[14px] font-bold uppercase tracking-[1.5px] text-white">Tap to pay</p>
-            <h3 className="mt-5 text-[32px] font-bold leading-[1.06] tracking-[-0.03em] md:text-[42px]">A payment that feels like a tap</h3>
-            <div className="mt-8 flex flex-1 items-end justify-center">
-              <TapCard />
-            </div>
-          </Reveal>
+        <div className="mt-10 md:mt-12">
+          {top && (
+            <>
+              <div style={{ width: `${PHONE_SHARE * 100}%` }} className="mx-auto">{phone}</div>
+              {beam}
+            </>
+          )}
 
-          <Reveal delay={120} className="flex min-h-[600px] flex-col overflow-hidden rounded-[36px] bg-night p-7 text-white md:p-10">
-            <p className="w-fit rounded-full bg-highlight px-4 py-1.5 text-[14px] font-bold uppercase tracking-[1.5px] text-ink">SKR rewards</p>
-            <h3 className="mt-5 text-[32px] font-bold leading-[1.06] tracking-[-0.03em] md:text-[42px]">Earn SKR. Keep it.<br />Pay no fees.</h3>
-            <p className="mt-4 max-w-[420px] text-[17px] leading-[1.5] text-[#b4bdc9]">Hold 1,000 SKR and your network fees are on us.</p>
-            <div className="mt-6 flex flex-1 items-end justify-center">
-              <SkrCoins />
-            </div>
-          </Reveal>
+          {/* Four short pieces of text and no pictures: the Seeker and its light are the picture.
+              The light fades out as it opens (the mask on `Beam`), so it ends in the page and
+              not in a hard edge under the words. */}
+          <div className="mx-auto grid max-w-[980px] gap-x-20 gap-y-12 md:grid-cols-2 md:gap-y-16">
+            {SEEKER_UNLOCKS.map((u, i) => (
+              <Reveal key={u.kicker} delay={i * 90}>
+                <p className="text-[15px] font-semibold text-blue-ink">{u.kicker}</p>
+                <h3 className="mt-2 text-[24px] font-bold leading-[1.15] tracking-[-0.03em] md:text-[26px]">{u.title}</h3>
+                <p className="mt-3 text-[17px] leading-[1.55] text-quiet">{u.text}</p>
+              </Reveal>
+            ))}
+          </div>
+
+          {!top && (
+            <>
+              {beam}
+              <div style={{ width: `${PHONE_SHARE * 100}%` }} className="mx-auto">{phone}</div>
+            </>
+          )}
         </div>
       </Container>
     </section>
@@ -396,70 +429,88 @@ function Duo() {
 }
 
 /**
- * The pay sheet a tap opens, as the app draws it: who is being paid, how much, the fee, and the
- * button. A card on the page, with the contactless sign over it for the tap that opened it.
+ * The app's tap sheet, drawn small: the wallet that will pay held out above the sheet with the
+ * contactless sign on it, then "Hold near to pay", the other linked wallets stacked under it,
+ * and "Request instead". It is drawn here and is not a screenshot, so the addresses and the
+ * balance are made up and nobody's real wallet is on the page.
  */
-function TapCard() {
+function TapSheet() {
+  const stack = [
+    { mark: "seeker", address: "7xKp…q3Fn", bg: "linear-gradient(180deg,#000000 0%,#012c3f 70%,#017f9f 100%)", ink: "#ffffff" },
+    { mark: "phantom", address: "Bq2m…Wd8T", bg: "#9886e5", ink: "#ffffff" },
+    { mark: "solflare", address: "Hn5v…c9Rz", bg: "#ffef47", ink: "#343433" },
+  ];
   return (
-    <div className="relative w-full max-w-[360px]" role="img" aria-label="AirPay's pay sheet after a tap: Pay maya.skr 12.00 USDC, network fee free, with a Confirm and pay button">
-      <div className="absolute -top-5 right-5 z-10 grid h-14 w-14 place-items-center rounded-full bg-blue shadow-[0_14px_30px_-10px_rgba(0,116,209,0.8)]">
-        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
-          <path d="M6.5 8.5a5 5 0 0 1 0 7M10 6a8.5 8.5 0 0 1 0 12M13.5 3.5a12 12 0 0 1 0 17" />
-        </svg>
-      </div>
-      <div className="rounded-t-[32px] bg-white p-6 pb-7 shadow-[0_-18px_50px_-24px_rgba(0,60,120,0.45)]">
-        <div className="mx-auto h-1 w-9 rounded-full bg-line" />
-        <div className="mt-5 flex items-center gap-3">
-          <span className="flex">
-            <Image src="/app/brand_seeker.png" alt="" width={92} height={92} className="h-[46px] w-[46px] rounded-full border-[3px] border-white object-cover" />
-            <Image src="/app/brand_seeker.png" alt="" width={92} height={92} className="-ml-4 h-[46px] w-[46px] rounded-full border-[3px] border-white object-cover" />
-          </span>
+    <div className="relative w-[236px] overflow-hidden rounded-[22px] bg-[#c9d3dd] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_0px_0px_1px_rgba(25,28,33,0.08)]" role="img" aria-label="AirPay's tap sheet: a Backpack wallet card held out to pay, the words Hold near to pay, three more wallets stacked below, and a Request instead button">
+      {/* The wallet in use, held out like a card over a terminal. */}
+      <div className="mx-2 mt-3 flex h-[84px] flex-col justify-between rounded-[16px] bg-[#212122] p-2.5 text-white">
+        <div className="flex items-center justify-between">
+          <Image src="/app/ic_wallet_backpack.png" alt="" width={48} height={48} className="h-6 w-6 object-contain" />
+          <span className="font-mono text-[10.5px]">Ck3t…m7Pa</span>
+        </div>
+        <div className="flex items-end justify-between">
           <span>
-            <span className="block text-[19px] font-bold leading-tight">Pay maya.skr</span>
-            <span className="block font-mono text-[13px] text-quiet">7xKp…q3Fn</span>
+            <span className="block text-[10.5px] font-bold leading-tight">Backpack</span>
+            <span className="block font-figure text-[16px] font-bold leading-tight tabular-nums">$24.10</span>
+          </span>
+          <span className="tap-pulse grid h-6 w-6 place-items-center rounded-full bg-white/15">
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" aria-hidden>
+              <path d="M6.5 8.5a5 5 0 0 1 0 7M10 6a8.5 8.5 0 0 1 0 12M13.5 3.5a12 12 0 0 1 0 17" />
+            </svg>
           </span>
         </div>
-        <p className="mt-5 font-figure text-[46px] font-bold leading-none tracking-[-0.03em] tabular-nums">
-          12.00 <span className="text-[22px] tracking-normal">USDC</span>
-        </p>
-        <dl className="mt-4 border-t border-line text-[15px]">
-          <div className="flex items-center justify-between py-2.5"><dt className="text-quiet">Network fee</dt><dd className="rounded-full bg-highlight px-3 py-0.5 font-bold">Free. It&apos;s on us</dd></div>
-        </dl>
-        <span className="mt-4 grid h-[56px] place-items-center rounded-[18px] bg-blue text-[19px] font-bold text-white">Confirm and pay</span>
+      </div>
+
+      {/* The sheet. */}
+      <div className="relative mt-2.5 rounded-t-[20px] bg-white px-2 pb-11 pt-2">
+        <div className="mx-auto h-[3px] w-7 rounded-full bg-line" />
+        <p className="mt-2 text-center text-[14px] font-bold">Hold near to pay</p>
+        <div className="relative mt-2 h-[92px]">
+          {stack.map((c, i) => (
+            <div key={c.mark} className="absolute inset-x-0 flex h-[64px] items-start justify-between rounded-[14px] px-2.5 pt-2" style={{ background: c.bg, color: c.ink, top: i * 26, zIndex: i }}>
+              <Image src={`/app/ic_wallet_${c.mark}.png`} alt="" width={40} height={40} className="h-5 w-5 rounded-[5px] object-contain" />
+              <span className="font-mono text-[10.5px]">{c.address}</span>
+            </div>
+          ))}
+        </div>
+        <span className="absolute inset-x-0 bottom-2.5 z-10 mx-auto grid h-8 w-[132px] place-items-center rounded-full bg-blue text-[12px] font-bold text-white shadow-[0_8px_18px_-8px_rgba(0,116,209,0.9)]">Request instead</span>
       </div>
     </div>
   );
 }
 
-function Safe() {
-  const points = [
-    { title: "AirPay never holds your keys", text: "There is nothing of yours for us to lose. Signing is done by your own wallet, every time." },
-    { title: "You see who you are paying", text: "A name always shows the end of its wallet, and a request shows who is asking before you approve." },
-    { title: "Paid means confirmed", text: "The green tick waits for Solana to confirm. If it is still on its way, the app says so and does not ask you to pay twice." },
-  ];
+/**
+ * The pay sheet a tap opens, small enough to sit whole in a short card: who is being paid, how
+ * much, the fee, and the button, with the contactless sign on its corner for the tap that
+ * opened it. Nothing is cut off and nothing is scaled; it is set at this size.
+ */
+function MiniPaySheet({ ground }: { ground: string }) {
   return (
-    <section>
-      <Container className="py-20 md:py-28">
-        <Reveal className="mx-auto max-w-[720px] text-center">
-          <Eyebrow>Safe by design</Eyebrow>
-          <Heading className="mt-4">Your money stays <Marked>yours</Marked></Heading>
-        </Reveal>
-        <ul className="mt-14 grid gap-5 md:grid-cols-3">
-          {points.map((p, i) => (
-            <Reveal as="li" key={p.title} delay={i * 110} className="rounded-[28px] border-[1.5px] border-line p-7">
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-blue">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
-                  <path d="M12 2.500c2 1.400 4.200 2 6.500 1.900.300 6.200-1.700 11.400-6.500 14.600C7.200 15.800 5.200 10.600 5.500 4.400 7.800 4.500 10 3.900 12 2.500Z" fill="#fff" />
-                  <path d="M9 11.300l2.200 2.200 3.900-4.400" fill="none" stroke="#008fff" strokeWidth="1.900" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <h3 className="mt-5 text-[21px] font-bold leading-tight tracking-[-0.02em]">{p.title}</h3>
-              <p className="mt-2.5 text-[17px] leading-[1.5] text-quiet">{p.text}</p>
-            </Reveal>
-          ))}
-        </ul>
-      </Container>
-    </section>
+    <div className="relative w-[236px]" role="img" aria-label="AirPay's pay sheet after a tap: Pay dezloper.skr 12.00 USDC, network fee free, with a Confirm and pay button">
+      {/* Ringed in the card's own colour, so the badge looks cut into the sheet's corner. */}
+      <div className="absolute -right-2.5 -top-2.5 z-10 grid h-10 w-10 place-items-center rounded-full bg-blue" style={{ boxShadow: `0 0 0 4px ${ground}` }}>
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+          <path d="M6.5 8.5a5 5 0 0 1 0 7M10 6a8.5 8.5 0 0 1 0 12M13.5 3.5a12 12 0 0 1 0 17" />
+        </svg>
+      </div>
+      <div className="rounded-[22px] bg-white p-4 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+        <div className="flex items-center gap-2.5">
+          <Image src="/app/brand_seeker.png" alt="" width={72} height={72} className="h-9 w-9 rounded-full object-cover" />
+          <span className="min-w-0">
+            <span className="block truncate text-[14px] font-bold leading-tight">Pay dezloper.skr</span>
+            <span className="block font-mono text-[11px] leading-tight text-quiet">7xKp…q3Fn</span>
+          </span>
+        </div>
+        <p className="mt-3 font-figure text-[30px] font-bold leading-none tracking-[-0.02em] tabular-nums">
+          12.00 <span className="text-[14px] tracking-normal text-quiet">USDC</span>
+        </p>
+        <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5 text-[12px]">
+          <span className="text-quiet">Network fee</span>
+          <span className="font-bold text-success-ink">Free</span>
+        </div>
+        <span className="mt-3 grid h-10 place-items-center rounded-[12px] bg-blue text-[14px] font-bold text-white">Confirm and pay</span>
+      </div>
+    </div>
   );
 }
 
@@ -555,37 +606,78 @@ function Team() {
   );
 }
 
+/** The few things people ask first, answered in a line or two each. Every answer is true today. */
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: "Is AirPay safe?",
+    a: "AirPay never holds your keys or your money. Every payment is approved in your own wallet and confirmed on Solana before the app says it is paid.",
+  },
+  {
+    q: "Which wallets does it work with?",
+    a: "Seeker Wallet, Phantom, Solflare and Backpack. You can connect more than one and switch the wallet you pay from at any time.",
+  },
+  {
+    q: "Do I need a Solana Seeker?",
+    a: "No. AirPay runs on Android phones too. Offers and scratch cards that pay SKR are for verified Seeker owners.",
+  },
+  {
+    q: "What can I pay for?",
+    a: "Phone recharges, bills and gift cards for 150+ services, paid in USDC or SOL. You can also pay any person by name, QR code or tap.",
+  },
+  {
+    q: "Do I need SOL for network fees?",
+    a: "No. The fee can come out of the USDC you already hold, and it is free for a wallet that holds 1,000 SKR.",
+  },
+];
+
+/** Heading on the left, questions on the right. Plain `details`, so it opens without any script. */
+function Faq() {
+  return (
+    <section id="faq" className="bg-white">
+      <Container className="grid gap-10 py-16 md:grid-cols-[0.9fr_1.1fr] md:gap-16 md:py-24">
+        <Reveal>
+          <Heading>Frequently asked questions</Heading>
+        </Reveal>
+        <Reveal delay={90}>
+          {FAQS.map((f) => (
+            <details key={f.q} className="faq group border-b border-line">
+              <summary className="flex cursor-pointer list-none items-center gap-4 py-5 text-[18px] font-medium leading-snug">
+                <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0 text-blue transition-transform duration-200 group-open:rotate-45" aria-hidden>
+                  <path d="M8 1.500v13M1.500 8h13" fill="none" stroke="currentColor" strokeWidth="1.800" strokeLinecap="round" />
+                </svg>
+                {f.q}
+              </summary>
+              <p className="pb-6 pl-8 pr-4 text-[16px] leading-[1.6] text-quiet">{f.a}</p>
+            </details>
+          ))}
+        </Reveal>
+      </Container>
+    </section>
+  );
+}
+
+/** The last word, as a quiet band: what it is and where to get it on the left, a moving mark on the right. */
 function GetTheApp() {
   return (
-    <section id="get">
-      <Container className="pb-16 md:pb-24">
-        <Reveal className="relative overflow-hidden rounded-[44px] bg-blue px-6 py-20 text-center text-white md:px-12 md:py-28">
-          {/* A lighter pool in the middle, so the panel is lit and not flat. */}
-          <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[120%] w-[90%] -translate-x-1/2 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,0.28),rgba(255,255,255,0)_62%)]" />
-          <div className="relative flex flex-col items-center">
-            <h2 className="max-w-[760px] text-[40px] font-bold leading-[1.04] tracking-[-0.04em] md:text-[68px]">
-              Make your wallet a way of paying.
-            </h2>
-            <p className="mt-6 max-w-[540px] text-[20px] font-bold leading-[1.45]">
-              AirPay runs on Solana mainnet. It is in private beta while it heads to the Solana dApp Store.
-            </p>
-            <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-              <a
-                href={site.appUrl}
-                className="inline-flex h-[60px] items-center justify-center rounded-full bg-white px-9 text-[19px] font-bold text-blue-ink shadow-[0_14px_30px_-12px_rgba(0,40,90,0.6)] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97]"
-              >
-                Get the app
-              </a>
-              <a
-                href={site.repoUrl}
-                className="inline-flex h-[60px] items-center justify-center rounded-full border-2 border-white px-8 text-[19px] font-bold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97]"
-              >
-                View the code
-              </a>
+    <section id="get" className="bg-mist">
+      <Container className="grid items-center gap-10 py-16 md:grid-cols-2 md:gap-16 md:py-20">
+        <Reveal>
+          <Heading>Get AirPay</Heading>
+          <p className="mt-5 max-w-[440px] text-[18px] leading-[1.55] text-quiet">
+            AirPay runs on Solana mainnet. It is in private beta while it heads to the Solana dApp Store. Works best
+            with Solana Seeker and Android phones.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <PrimaryButton href={site.appUrl}>Get the app</PrimaryButton>
+            <SecondaryButton href={site.repoUrl}>View the code</SecondaryButton>
+          </div>
+        </Reveal>
+        <Reveal delay={90} className="relative mx-auto aspect-[1/0.78] w-full max-w-[420px]">
+          <div aria-hidden className="absolute inset-0">
+            <Loose pieces={LOOSE_RIGHT} />
+            <div className="absolute left-1/2 top-[47%] w-[40%] -translate-x-1/2 -translate-y-1/2">
+              <Morph items={WORKS} turn={1} />
             </div>
-            <p className="mt-9 flex items-center gap-2.5 text-[19px] font-bold">
-              Works with <WalletMarks size={30} /> and more
-            </p>
           </div>
         </Reveal>
       </Container>
