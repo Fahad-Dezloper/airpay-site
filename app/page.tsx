@@ -5,11 +5,12 @@ import { Scrap, type ScrapKind } from "@/components/Art";
 import { HeroStage } from "@/components/HeroStage";
 import { LogoWall } from "@/components/LogoWall";
 import { Reveal } from "@/components/Reveal";
-import { kinds, serviceCounts } from "@/lib/catalogue";
+import { serviceCounts } from "@/lib/catalogue";
 import { Footer, Header } from "@/components/Chrome";
 import { site } from "@/lib/site";
 import { Waitlist } from "@/components/Waitlist";
 import { QrArt } from "@/components/QrArt";
+import { SkrCoins } from "@/components/SkrCoins";
 
 export default function Home() {
   return (
@@ -42,17 +43,17 @@ const AROUND: { kind: ScrapKind; colour: string; left: string; top: string; size
 ];
 
 function Hero() {
-  // One screen and no scrolling to reach the field: the mark that keeps becoming the next thing
-  // AirPay is for, one line, and the one thing to do. Sizes follow the height of the screen.
-  //
-  // Under the field a soft blue cloud rises and thins away again below the fold, so the hero
-  // runs into the next section with no edge anywhere.
+  // The app's first page, laid out as the app lays it out: the mark that keeps becoming the next
+  // thing AirPay is for on white, and under it the app's blue glow rising from the bottom with
+  // the line and the one thing to do on it, in white. One screen, sized from the screen's height.
   return (
-    <section id="top" className="relative overflow-hidden">
-      <div aria-hidden className="cloud pointer-events-none absolute inset-x-0 bottom-0 h-[min(62svh,620px)]" />
+    <section id="top" className="relative overflow-hidden bg-white">
+      <div className="relative flex min-h-[min(100svh,980px)] flex-col items-center px-5 pt-[84px]">
+        {/* The glow, drawn with the app's own stops: a dome, solid in its middle, with a long fade
+            at the top and no edge. */}
+        <div aria-hidden className="glow pointer-events-none absolute inset-x-0 bottom-0 h-[70%]" />
 
-      <div className="relative flex min-h-[min(100svh,980px)] flex-col items-center justify-center px-5 pb-[min(7svh,70px)] pt-[84px]">
-        <div className="relative w-full max-w-[1100px]">
+        <div className="relative flex w-full max-w-[1100px] flex-1 items-center justify-center">
           <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
             {AROUND.map((b, i) => (
               <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: b.left, top: b.top, width: b.size, height: b.size }}>
@@ -64,22 +65,23 @@ function Hero() {
               </div>
             ))}
           </div>
-          <div className="mx-auto w-[min(76vw,36svh,370px)]">
+          <div className="w-[min(72vw,34svh,350px)]">
             <HeroStage />
           </div>
         </div>
 
-        <h1 className="relative mt-[2svh] max-w-[980px] text-center text-[clamp(34px,min(10.5vw,8.6svh),86px)] font-bold leading-[1.08] tracking-[-0.045em]">
-          Crypto you can <Marked>actually spend.</Marked>
-        </h1>
-
-        <div className="relative mt-[4svh] flex w-full flex-col items-center">
-          <Waitlist />
+        <div className="relative flex w-full flex-col items-center pb-[min(8svh,80px)] pt-[2svh]">
+          <h1 className="max-w-[980px] text-center text-[clamp(32px,min(9.5vw,7.6svh),76px)] font-bold leading-[1.08] tracking-[-0.045em] text-white">
+            Crypto you can <span className="text-ink"><Marked>actually spend.</Marked></span>
+          </h1>
+          <div className="mt-[3.5svh] flex w-full flex-col items-center">
+            <Waitlist />
+          </div>
         </div>
       </div>
 
-      {/* Room for the cloud to thin out in, before the next section begins. */}
-      <div aria-hidden className="h-[min(20svh,200px)]" />
+      {/* The blue thins out into the white of the next section, so the hero ends without a line. */}
+      <div aria-hidden className="glow-tail h-[min(30svh,280px)]" />
     </section>
   );
 }
@@ -154,7 +156,6 @@ function Does() {
               kicker="Everyday essentials"
               title="Pay your bills"
               text="Recharge any phone. Pay for streaming, travel, food and shopping."
-              foot="Sold and delivered by Bitrefill. AirPay adds no fee."
               className="md:max-w-[52%]"
             />
             <div className="relative mt-8 h-[300px] w-full md:mt-0 md:h-auto md:flex-1 md:self-stretch">
@@ -328,14 +329,6 @@ async function Services() {
           <Heading className="mt-3">
             We are live with <span className="font-figure tabular-nums">{Math.floor(counts.total / 50) * 50}+</span> services accepting crypto
           </Heading>
-          <ul className="mt-7 flex flex-wrap justify-center gap-2.5">
-            {kinds.map((k) => (
-              <li key={k.name} className="flex h-10 items-center gap-2 rounded-full border-[1.5px] border-line bg-white px-4 text-[15px] font-medium">
-                {k.name}
-                <span className="font-figure text-quiet tabular-nums">{k.count}</span>
-              </li>
-            ))}
-          </ul>
         </Reveal>
       </Container>
       <Reveal className="mt-12">
@@ -347,64 +340,70 @@ async function Services() {
 
 /** Two boxes side by side: the tap, and what the tap earns. */
 function Duo() {
-  const rings = [
-    { r: 38, n: 20, pace: "70s", fade: 1 },
-    { r: 49, n: 26, pace: "95s", fade: 0.5 },
-  ];
   return (
     <section id="earn">
-      <Container className="grid gap-4 py-16 md:grid-cols-2 md:gap-5 md:py-24">
-        <Reveal className="flex flex-col overflow-hidden rounded-[36px] bg-[#e9f4ff] p-7 md:p-10">
-          <Eyebrow className="text-blue-ink">Tap to pay</Eyebrow>
-          <h2 className="mt-3 text-[32px] font-bold leading-[1.06] tracking-[-0.03em] md:text-[42px]">A payment that feels like a tap</h2>
-          <p className="mt-4 max-w-[440px] text-[17px] leading-[1.5] text-quiet">
-            Hold two phones together and the pay sheet opens, even with AirPay closed. Approve in your own wallet. The
-            tick appears when Solana confirms it.
-          </p>
-          <p className="mt-4 text-[14px] font-medium">Works on the Seeker and on any Android phone with NFC.</p>
-          <div className="mt-6 flex flex-1 items-end justify-center">
-            <Image src="/app/nfc_tip.png" alt="The back of a Seeker with rings showing where its NFC radio is" width={660} height={660} className="drift -mb-10 w-[78%] max-w-[360px]" style={{ ["--pace" as string]: "3.600s" }} />
-          </div>
+      <Container className="py-16 md:py-24">
+        <Reveal className="mx-auto text-center">
+          <Eyebrow>For Seeker owners</Eyebrow>
+          <Heading className="mt-3">Seeker also unlocks</Heading>
         </Reveal>
 
-        <Reveal delay={120} className="flex flex-col overflow-hidden rounded-[36px] bg-night p-7 text-white md:p-10">
-          <Eyebrow className="text-[#4db2ff]">SKR, for Seeker owners</Eyebrow>
-          <h2 className="mt-3 text-[32px] font-bold leading-[1.06] tracking-[-0.03em] md:text-[42px]">Earn SKR. Keep it.<br />Pay no fees.</h2>
-          <p className="mt-4 max-w-[440px] text-[17px] leading-[1.5] text-[#b4bdc9]">
-            Pay and scratch a card, and the SKR is sent to your wallet. Buy more inside the app at the best rate
-            Jupiter can find. Hold 1,000 SKR and your network fees are on us.
-          </p>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {["Scratch cards", "Buy SKR in the app", "Free fees at 1,000 SKR", "Offers", "Refer and earn"].map((t) => (
-              <li key={t} className="flex h-9 items-center rounded-full border border-[#2a2f38] bg-[#16191f] px-3.5 text-[14px] font-medium">{t}</li>
-            ))}
-          </ul>
-          <div className="mt-6 flex flex-1 items-end justify-center">
-            <div className="relative -mb-16 aspect-square w-[82%] max-w-[380px]">
-              {rings.map((ring, k) => (
-                <div key={k} className={`skr-ring absolute inset-0 ${k % 2 ? "skr-ring-back" : ""}`} style={{ ["--pace" as string]: ring.pace }} aria-hidden>
-                  {Array.from({ length: ring.n }, (_, i) => {
-                    const a = (i / ring.n) * Math.PI * 2;
-                    return (
-                      <Image
-                        key={i}
-                        src="/app/skr_token.png"
-                        alt=""
-                        width={48}
-                        height={48}
-                        className="absolute h-[7%] w-[7%] -translate-x-1/2 -translate-y-1/2"
-                        style={{ left: `${50 + Math.cos(a) * ring.r}%`, top: `${50 + Math.sin(a) * ring.r}%`, opacity: ring.fade }}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-              <Image src="/app/skr_token.png" alt="The SKR token" width={320} height={320} className="absolute left-1/2 top-1/2 w-[46%] -translate-x-1/2 -translate-y-1/2" />
+        <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
+          <Reveal className="flex min-h-[600px] flex-col overflow-hidden rounded-[36px] bg-[#e9f4ff] p-7 md:p-10">
+            <p className="w-fit rounded-full bg-blue px-4 py-1.5 text-[14px] font-bold uppercase tracking-[1.5px] text-white">Tap to pay</p>
+            <h3 className="mt-5 text-[32px] font-bold leading-[1.06] tracking-[-0.03em] md:text-[42px]">A payment that feels like a tap</h3>
+            <div className="mt-8 flex flex-1 items-end justify-center">
+              <TapCard />
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+
+          <Reveal delay={120} className="flex min-h-[600px] flex-col overflow-hidden rounded-[36px] bg-night p-7 text-white md:p-10">
+            <p className="w-fit rounded-full bg-highlight px-4 py-1.5 text-[14px] font-bold uppercase tracking-[1.5px] text-ink">SKR rewards</p>
+            <h3 className="mt-5 text-[32px] font-bold leading-[1.06] tracking-[-0.03em] md:text-[42px]">Earn SKR. Keep it.<br />Pay no fees.</h3>
+            <p className="mt-4 max-w-[420px] text-[17px] leading-[1.5] text-[#b4bdc9]">Hold 1,000 SKR and your network fees are on us.</p>
+            <div className="mt-6 flex flex-1 items-end justify-center">
+              <SkrCoins />
+            </div>
+          </Reveal>
+        </div>
       </Container>
     </section>
+  );
+}
+
+/**
+ * The pay sheet a tap opens, as the app draws it: who is being paid, how much, the fee, and the
+ * button. A card on the page, with the contactless sign over it for the tap that opened it.
+ */
+function TapCard() {
+  return (
+    <div className="relative w-full max-w-[360px]" role="img" aria-label="AirPay's pay sheet after a tap: Pay maya.skr 12.00 USDC, network fee free, with a Confirm and pay button">
+      <div className="absolute -top-5 right-5 z-10 grid h-14 w-14 place-items-center rounded-full bg-blue shadow-[0_14px_30px_-10px_rgba(0,116,209,0.8)]">
+        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+          <path d="M6.5 8.5a5 5 0 0 1 0 7M10 6a8.5 8.5 0 0 1 0 12M13.5 3.5a12 12 0 0 1 0 17" />
+        </svg>
+      </div>
+      <div className="rounded-t-[32px] bg-white p-6 pb-7 shadow-[0_-18px_50px_-24px_rgba(0,60,120,0.45)]">
+        <div className="mx-auto h-1 w-9 rounded-full bg-line" />
+        <div className="mt-5 flex items-center gap-3">
+          <span className="flex">
+            <Image src="/app/brand_seeker.png" alt="" width={92} height={92} className="h-[46px] w-[46px] rounded-full border-[3px] border-white object-cover" />
+            <Image src="/app/brand_seeker.png" alt="" width={92} height={92} className="-ml-4 h-[46px] w-[46px] rounded-full border-[3px] border-white object-cover" />
+          </span>
+          <span>
+            <span className="block text-[19px] font-bold leading-tight">Pay maya.skr</span>
+            <span className="block font-mono text-[13px] text-quiet">7xKp…q3Fn</span>
+          </span>
+        </div>
+        <p className="mt-5 font-figure text-[46px] font-bold leading-none tracking-[-0.03em] tabular-nums">
+          12.00 <span className="text-[22px] tracking-normal">USDC</span>
+        </p>
+        <dl className="mt-4 border-t border-line text-[15px]">
+          <div className="flex items-center justify-between py-2.5"><dt className="text-quiet">Network fee</dt><dd className="rounded-full bg-highlight px-3 py-0.5 font-bold">Free. It&apos;s on us</dd></div>
+        </dl>
+        <span className="mt-4 grid h-[56px] place-items-center rounded-[18px] bg-blue text-[19px] font-bold text-white">Confirm and pay</span>
+      </div>
+    </div>
   );
 }
 

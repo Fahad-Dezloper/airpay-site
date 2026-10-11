@@ -84,6 +84,72 @@ section[id] {
   transform: translateY(22px);
 }
 
+/* The app's own glow, with the app's own stops (Landing.kt): a dome that is solid blue through
+   its middle and thins out over a long, eased top, so it has no edge. Wider than tall, more so
+   on a phone, as it is in the app. */
+.glow {
+  background: radial-gradient(
+    ellipse 108% 100% at 50% 100%,
+    var(--color-blue) 0%,
+    var(--color-blue) 52%,
+    rgb(0 143 255 / 0.9) 58%,
+    rgb(0 143 255 / 0.72) 64%,
+    rgb(0 143 255 / 0.52) 70%,
+    rgb(0 143 255 / 0.34) 76%,
+    rgb(0 143 255 / 0.2) 82%,
+    rgb(0 143 255 / 0.1) 88%,
+    rgb(0 143 255 / 0.035) 94%,
+    rgb(0 143 255 / 0) 100%
+  );
+}
+@media (min-width: 768px) {
+  .glow {
+    background: radial-gradient(
+      ellipse 72% 100% at 50% 100%,
+      var(--color-blue) 0%,
+      var(--color-blue) 52%,
+      rgb(0 143 255 / 0.9) 58%,
+      rgb(0 143 255 / 0.72) 64%,
+      rgb(0 143 255 / 0.52) 70%,
+      rgb(0 143 255 / 0.34) 76%,
+      rgb(0 143 255 / 0.2) 82%,
+      rgb(0 143 255 / 0.1) 88%,
+      rgb(0 143 255 / 0.035) 94%,
+      rgb(0 143 255 / 0) 100%
+    );
+  }
+}
+/* Under the glow: the same dome, turned over, so the blue thins out downwards into the next
+   section the way it thins out upwards into the page. */
+.glow-tail {
+  /* The same stops as the glow, so along the line where the two meet they are the same colour
+     at every point and no seam shows. */
+  background: radial-gradient(ellipse 108% 100% at 50% 0%, var(--color-blue) 0%, var(--color-blue) 52%, rgb(0 143 255 / 0.9) 58%, rgb(0 143 255 / 0.72) 64%, rgb(0 143 255 / 0.52) 70%, rgb(0 143 255 / 0.34) 76%, rgb(0 143 255 / 0.2) 82%, rgb(0 143 255 / 0.1) 88%, rgb(0 143 255 / 0.035) 94%, rgb(0 143 255 / 0) 100%);
+}
+@media (min-width: 768px) {
+  .glow-tail {
+    background: radial-gradient(ellipse 72% 100% at 50% 0%, var(--color-blue) 0%, var(--color-blue) 52%, rgb(0 143 255 / 0.9) 58%, rgb(0 143 255 / 0.72) 64%, rgb(0 143 255 / 0.52) 70%, rgb(0 143 255 / 0.34) 76%, rgb(0 143 255 / 0.2) 82%, rgb(0 143 255 / 0.1) 88%, rgb(0 143 255 / 0.035) 94%, rgb(0 143 255 / 0) 100%);
+  }
+}
+
+/* The SKR coins turn over in order under the pointer: the big one, the inner ring, the outer
+   ring. Taking the pointer away turns them back from the outside in. Each layer's delay in the
+   resting rule is its delay on the way back; the delay under :hover is its delay on the way in. */
+.coin {
+  transition: transform 0.9s cubic-bezier(0.3, 0.9, 0.3, 1);
+}
+.coin-0 { transition-delay: 0.36s; }
+.coin-1 { transition-delay: 0.18s; }
+.coin-2 { transition-delay: 0s; }
+.coins:hover .coin { transform: rotateY(360deg); }
+.coins:hover .coin-0 { transition-delay: 0s; }
+.coins:hover .coin-1 { transition-delay: 0.18s; }
+.coins:hover .coin-2 { transition-delay: 0.36s; }
+@media (prefers-reduced-motion: reduce) {
+  .coin { transition: none; }
+  .coins:hover .coin { transform: none; }
+}
+
 /* The scanner's line of light: down the code and back, for ever. */
 .scan-beam {
   top: 0;
