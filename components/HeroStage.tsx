@@ -47,7 +47,7 @@ function at(x: number, y: number, size: number) {
   };
 }
 
-export function HeroStage() {
+export function HeroStage({ four = true }: { four?: boolean }) {
   const [turns, setTurns] = useState(0);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -79,7 +79,7 @@ export function HeroStage() {
         ))}
 
         {/* The four, small. Not the app's own mark: that is the middle's alone. */}
-        {USES.slice(1).map((u, k) => {
+        {four && USES.slice(1).map((u, k) => {
           const i = k + 1;
           return (
           <div key={u.label} className="absolute aspect-square -translate-x-1/2 -translate-y-1/2" style={at(SMALL[k][0], SMALL[k][1], 68)}>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { Container, Eyebrow, Heading, Marked, Phone, WalletMarks } from "@/components/ui";
-import { Scrap, type ScrapKind } from "@/components/Art";
+import { Scrap, USES, UseArt, type ScrapKind } from "@/components/Art";
 import { HeroStage } from "@/components/HeroStage";
 import { LogoWall } from "@/components/LogoWall";
 import { Reveal } from "@/components/Reveal";
@@ -32,56 +32,80 @@ export default function Home() {
   );
 }
 
-/** A few stars either side of the mark on a wide screen, each with its mirror. Nothing else. */
-const AROUND: { kind: ScrapKind; colour: string; left: string; top: string; size: number; turn: number; pace: number }[] = [
-  { kind: "star", colour: "#ffc53d", left: "17%", top: "22%", size: 30, turn: -8, pace: 2.8 },
-  { kind: "spark", colour: "#ffc53d", left: "27%", top: "56%", size: 20, turn: 0, pace: 3.2 },
-  { kind: "star", colour: "#ffc53d", left: "12%", top: "80%", size: 24, turn: 8, pace: 3.6 },
-  { kind: "star", colour: "#ffc53d", left: "83%", top: "22%", size: 30, turn: 8, pace: 3.1 },
-  { kind: "spark", colour: "#ffc53d", left: "73%", top: "56%", size: 20, turn: 0, pace: 3.4 },
-  { kind: "star", colour: "#ffc53d", left: "88%", top: "80%", size: 24, turn: -8, pace: 3.9 },
+/**
+ * What stands to the right of the headline on a wide screen: the four things AirPay is for, as
+ * the app draws them, at different sizes on soft discs, with a few small pieces between them.
+ * Positions are percentages of the cluster's own box. Decoration: the headline says it in words.
+ */
+const CLUSTER: (
+  | { use: number; left: string; top: string; size: string; pace: number }
+  | { kind: ScrapKind; colour: string; left: string; top: string; size: string; turn: number; pace: number }
+)[] = [
+  { use: 1, left: "30%", top: "30%", size: "34%", pace: 4.2 },
+  { use: 3, left: "74%", top: "24%", size: "26%", pace: 3.6 },
+  { use: 2, left: "66%", top: "66%", size: "32%", pace: 4.6 },
+  { use: 4, left: "24%", top: "74%", size: "24%", pace: 3.9 },
+  { kind: "shield", colour: "#008fff", left: "52%", top: "44%", size: "15%", turn: 8, pace: 4.3 },
+  { kind: "gift", colour: "#ff4f7b", left: "90%", top: "48%", size: "15%", turn: 8, pace: 3.5 },
+  { kind: "coin", colour: "#ffc53d", left: "50%", top: "9%", size: "13%", turn: -12, pace: 3.3 },
+  { kind: "star", colour: "#ffc53d", left: "8%", top: "50%", size: "8%", turn: -8, pace: 2.8 },
+  { kind: "star", colour: "#ffc53d", left: "46%", top: "90%", size: "9%", turn: 10, pace: 3.1 },
+  { kind: "spark", colour: "#ffc53d", left: "92%", top: "84%", size: "6%", turn: 0, pace: 3.4 },
+  { kind: "spark", colour: "#ffc53d", left: "10%", top: "10%", size: "6%", turn: 0, pace: 3.0 },
+];
+
+/** The soft discs behind a cluster, so the pieces sit on something and do not float on bare white. */
+const PADS = [
+  { left: "34%", top: "34%", size: "58%" },
+  { left: "70%", top: "64%", size: "50%" },
 ];
 
 function Hero() {
-  // The app's first page, laid out as the app lays it out: the mark that keeps becoming the next
-  // thing AirPay is for on white, and under it the app's blue glow rising from the bottom with
-  // the line and the one thing to do on it, in white. One screen, sized from the screen's height.
+  // No glow and no colour behind it: white, the line in the middle, and the app's own drawings
+  // either side of it on a wide screen. On a phone the moving mark sits above the line.
   return (
     <section id="top" className="relative overflow-hidden bg-white">
-      <div className="relative flex min-h-[min(100svh,980px)] flex-col items-center px-5 pt-[84px]">
-        {/* The glow, drawn with the app's own stops: a dome, solid in its middle, with a long fade
-            at the top and no edge. */}
-        <div aria-hidden className="glow pointer-events-none absolute inset-x-0 bottom-0 h-[70%]" />
-
-        <div className="relative flex w-full max-w-[1100px] flex-1 items-center justify-center">
-          <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
-            {AROUND.map((b, i) => (
-              <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: b.left, top: b.top, width: b.size, height: b.size }}>
-                <div className="pop-in h-full w-full" style={{ ["--lag" as string]: `${0.2 + i * 0.05}s` }}>
-                  <div className="drift h-full w-full" style={{ ["--turn" as string]: `${b.turn}deg`, ["--pace" as string]: `${b.pace}s`, ["--lag" as string]: `${-i * 0.4}s` }}>
-                    <Scrap kind={b.kind} colour={b.colour} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="w-[min(72vw,34svh,350px)]">
-            <HeroStage />
-          </div>
+      <div className="mx-auto grid min-h-[min(92svh,860px)] w-full max-w-[1560px] items-center gap-6 px-5 pb-12 pt-[104px] lg:grid-cols-[1fr_minmax(480px,620px)_1fr] lg:gap-6 lg:pb-16">
+        {/* Left: the mark that keeps becoming the next thing AirPay is for. */}
+        <div className="relative mx-auto w-[min(70vw,300px)] lg:w-[min(100%,330px)]">
+          <div aria-hidden className="absolute left-1/2 top-[46%] hidden aspect-square w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f4f2ee] lg:block" />
+          <HeroStage four={false} />
         </div>
 
-        <div className="relative flex w-full flex-col items-center pb-[min(8svh,80px)] pt-[2svh]">
-          <h1 className="max-w-[980px] text-center text-[clamp(32px,min(9.5vw,7.6svh),76px)] font-bold leading-[1.08] tracking-[-0.045em] text-white">
-            Crypto you can <span className="text-ink"><Marked>actually spend.</Marked></span>
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-[clamp(38px,10.5vw,84px)] font-bold leading-[1.04] tracking-[-0.045em] lg:text-[clamp(56px,5.6vw,88px)]">
+            Crypto you can <Marked>actually spend.</Marked>
           </h1>
-          <div className="mt-[3.5svh] flex w-full flex-col items-center">
+          <p className="mt-6 max-w-[460px] text-[19px] leading-[1.5] text-quiet">
+            Recharge, pay bills, shop and pay people, straight from the wallets you already have.
+          </p>
+          <div className="mt-8 flex w-full flex-col items-center">
             <Waitlist />
           </div>
         </div>
-      </div>
 
-      {/* The blue thins out into the white of the next section, so the hero ends without a line. */}
-      <div aria-hidden className="glow-tail h-[min(30svh,280px)]" />
+        {/* Right: what it is for, as a handful of the app's drawings. */}
+        <div aria-hidden className="relative mx-auto hidden aspect-square w-[min(100%,360px)] lg:block">
+          {PADS.map((p, i) => (
+            <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f4f2ee]" style={{ left: p.left, top: p.top, width: p.size, aspectRatio: "1" }} />
+          ))}
+          {CLUSTER.map((c, i) => (
+            <div key={i} className="absolute aspect-square -translate-x-1/2 -translate-y-1/2" style={{ left: c.left, top: c.top, width: c.size }}>
+              <div className="pop-in h-full w-full" style={{ ["--lag" as string]: `${0.15 + i * 0.06}s` }}>
+                {"use" in c ? (
+                  <div className="drift grid h-full w-full place-items-center rounded-full" style={{ background: USES[c.use].ground, ["--pace" as string]: `${c.pace}s`, ["--lag" as string]: `${-i * 0.5}s` }}>
+                    <UseArt index={c.use} className={c.use === 4 ? "h-[74%] w-[74%]" : "h-[56%] w-[56%]"} />
+                  </div>
+                ) : (
+                  <div className="drift h-full w-full" style={{ ["--turn" as string]: `${c.turn}deg`, ["--pace" as string]: `${c.pace}s`, ["--lag" as string]: `${-i * 0.5}s` }}>
+                    <Scrap kind={c.kind} colour={c.colour} />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
