@@ -34,9 +34,14 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry),
       });
-      if (!res.ok) return Response.json({ error: "not_saved" }, { status: 502 });
+      if (!res.ok) {
+        // Into the host's log, so a refusal can be told from a crash. Never the address or the hook.
+        console.error("waitlist hook refused", res.status, (await res.text()).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").slice(0, 300));
+        return Response.json({ error: "not_saved" }, { status: 502 });
+      }
       return Response.json({ ok: true });
-    } catch {
+    } catch (e) {
+      console.error("waitlist hook unreachable", e instanceof Error ? e.message : "unknown");
       return Response.json({ error: "not_saved" }, { status: 502 });
     }
   }
