@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Container, Eyebrow, Heading, Marked, Phone } from "@/components/ui";
-import { HeroStage } from "@/components/HeroStage";
+import { Container, Eyebrow, Heading, Marked, Phone, SectionTag } from "@/components/ui";
 import { LogoWall } from "@/components/LogoWall";
 import { Reveal } from "@/components/Reveal";
 import { serviceCounts } from "@/lib/catalogue";
@@ -14,6 +13,7 @@ import { Beam, PHONE_SHARE, SeekerBack } from "@/components/SeekerBeam";
 import { PayAnyone } from "@/components/PayAnyone";
 import { Secure } from "@/components/Secure";
 import { FloatingGet } from "@/components/FloatingGet";
+import { MeetLabel } from "@/components/MeetLabel";
 
 export default function Home() {
   return (
@@ -39,13 +39,11 @@ export default function Home() {
 
 function Hero() {
   // White and to the point: the line, what you can do, and the email field. Nothing either side.
+  // It fills the screen. The next section's label, "Meet AirPay", waits at its foot just above
+  // the floating button (`MeetLabel`), and settles above its own heading as the page scrolls.
   return (
     <section id="top" className="relative overflow-hidden bg-white">
-      <div className="relative mx-auto flex min-h-[min(92svh,860px)] w-full max-w-[1560px] flex-col items-center justify-center gap-6 px-5 pb-12 pt-[104px] lg:pb-16">
-        <div className="relative mx-auto w-[min(70vw,300px)] lg:hidden">
-          <HeroStage four={false} />
-        </div>
-
+      <div className="relative mx-auto flex min-h-[100svh] w-full max-w-[1560px] flex-col items-center justify-center gap-6 px-5 pb-[150px] pt-[104px]">
         <div className="flex max-w-[680px] flex-col items-center text-center">
           <h1 className="text-[clamp(38px,10.5vw,84px)] font-medium leading-[1.06] tracking-[-0.04em] lg:text-[clamp(52px,5.2vw,88px)]">
             Crypto you can actually spend.
@@ -68,9 +66,12 @@ function Does() {
     // On a wide screen the whole section is held to about 1.3 screens: two rows of tiles whose
     // height follows the screen's, so every tile is in view with one short scroll.
     <section id="does" className="bg-white">
-      <Container className="py-16 md:py-24">
+      <Container className="pb-16 pt-4 md:pb-24">
+        {/* Outside the `Reveal`: it has to show from the first moment, lifted to the screen's foot. */}
+        <div className="text-center">
+          <MeetLabel />
+        </div>
         <Reveal className="mx-auto text-center">
-          <Eyebrow>Meet AirPay</Eyebrow>
           <Heading className="mt-3">One app for the things you pay for</Heading>
         </Reveal>
 
@@ -152,7 +153,7 @@ function Does() {
 /** One tile of the grid: white, rounded, a column unless told otherwise. */
 function Tile({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   return (
-    <Reveal delay={delay} className={`flex min-h-[380px] flex-col overflow-hidden rounded-[32px] bg-mist p-7 md:min-h-0 ${className}`}>
+    <Reveal delay={delay} className={`flex flex-col overflow-hidden rounded-[28px] bg-mist p-6 md:rounded-[32px] md:p-7 ${className}`}>
       {children}
     </Reveal>
   );
@@ -227,7 +228,7 @@ async function Services() {
     <section id="services" className="overflow-hidden bg-mist py-16 md:py-24">
       <Container>
         <Reveal className="mx-auto flex max-w-[860px] flex-col items-center text-center">
-          <Eyebrow>Spend</Eyebrow>
+          <SectionTag>Spend</SectionTag>
           <Heading className="mt-3">
             We are live with <span className="font-figure tabular-nums">{Math.floor(counts.total / 50) * 50}+</span> services accepting crypto
           </Heading>
@@ -294,7 +295,7 @@ function Duo() {
     <section id="earn" className="bg-white">
       <Container className="py-16 md:py-24">
         <Reveal className="mx-auto text-center">
-          <Eyebrow>For Seeker owners</Eyebrow>
+          <SectionTag>For Seeker owners</SectionTag>
           <Heading className="mt-3">Seeker also unlocks</Heading>
         </Reveal>
 
@@ -432,7 +433,7 @@ function Next() {
     <section className="bg-mist">
       <Container className="grid gap-12 py-20 md:grid-cols-[0.85fr_1.15fr] md:gap-20 md:py-28">
         <Reveal>
-          <Eyebrow>From feedback</Eyebrow>
+          <SectionTag>From feedback</SectionTag>
           <Heading className="mt-4">What is coming next</Heading>
           <p className="mt-5 max-w-[420px] text-[18px] leading-[1.55] text-quiet">
             AirPay is in private beta with a small circle of people who earn on-chain. This is what they asked for.
@@ -474,7 +475,7 @@ function Team() {
     <section id="team">
       <Container className="py-20 md:py-28">
         <Reveal className="mx-auto max-w-[760px] text-center">
-          <Eyebrow>The team</Eyebrow>
+          <SectionTag>The team</SectionTag>
           <Heading className="mt-4">One of us lives on-chain. The other never did.</Heading>
           <p className="mx-auto mt-5 max-w-[560px] text-[18px] leading-[1.55] text-quiet">
             That is why AirPay is built to feel like the payment apps ordinary people already use, and not like a

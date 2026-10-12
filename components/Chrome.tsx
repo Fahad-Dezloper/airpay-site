@@ -155,7 +155,7 @@ export function Footer() {
 
       <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 px-3 pt-5 text-[14px] text-quiet sm:flex-row sm:items-center sm:justify-between">
         <p>© AirPay 2026</p>
-        <p>AirPay never holds your keys. Payments settle on Solana.</p>
+        <p className="hidden sm:block">AirPay never holds your keys. Payments settle on Solana.</p>
       </div>
     </footer>
   );

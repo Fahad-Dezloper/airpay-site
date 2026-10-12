@@ -11,6 +11,18 @@ export function Eyebrow({ children, className = "text-quiet" }: { children: Reac
   return <p className={`text-[12px] font-bold uppercase tracking-[1.5px] ${className}`}>{children}</p>;
 }
 
+/**
+ * A section's label: the small uppercase words above its heading, in ink on a box of the app's
+ * highlight colour. One per section. (Labels inside tiles stay plain `Eyebrow`s.)
+ */
+export function SectionTag({ children }: { children: ReactNode }) {
+  return (
+    <p className="inline-block rounded-[7px] bg-highlight px-2.5 py-1.5 text-[12px] font-bold uppercase leading-none tracking-[1.5px] text-ink">
+      {children}
+    </p>
+  );
+}
+
 /** A section's heading. One size for all of them, so the page has one voice. */
 export function Heading({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (

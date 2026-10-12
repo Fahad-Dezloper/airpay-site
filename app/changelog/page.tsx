@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Footer, Header } from "@/components/Chrome";
 import { Reveal } from "@/components/Reveal";
-import { Container, Eyebrow } from "@/components/ui";
+import { Container, SectionTag } from "@/components/ui";
 
 /**
  * The changelog: what is coming, then what is already in the app.
@@ -41,7 +41,7 @@ export default function Changelog() {
       <main>
         <Container className="pb-16 pt-[132px] md:pb-24 md:pt-[168px]">
           <Reveal className="max-w-[720px]">
-            <Eyebrow>Changelog</Eyebrow>
+            <SectionTag>Changelog</SectionTag>
             <h1 className="mt-4 text-[40px] font-bold leading-[1.05] tracking-[-0.04em] md:text-[64px]">What is coming next</h1>
             <p className="mt-5 max-w-[560px] text-[18px] leading-[1.55] text-quiet">
               AirPay is in private beta with a small circle of people who earn on-chain. This is what they asked for.
