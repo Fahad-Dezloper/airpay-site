@@ -374,3 +374,24 @@ section[id] {
 
 /* The questions (page.tsx `Faq`): no browser triangle beside the summary; the plus is ours. */
 .faq > summary::-webkit-details-marker { display: none; }
+
+/* "One QR for every wallet" (components/OneQr.tsx). The active wallet's dotted line: its dots
+   run from the code down to the wallet. One step is one dot and its gap (7), so it loops unseen. */
+.qr-flow { animation: qr-flow 0.5s linear infinite; }
+@keyframes qr-flow {
+  to { stroke-dashoffset: -7; }
+}
+/* On a change of wallet: a ring goes out from the code, and the chosen wallet pops. */
+.qr-ring { animation: qr-ring 0.6s ease-out both; }
+@keyframes qr-ring {
+  from { box-shadow: 0 0 0 0 rgb(0 143 255 / 0.55); }
+  to { box-shadow: 0 0 0 12px rgb(0 143 255 / 0); }
+}
+.qr-pop { animation: qr-pop 0.4s cubic-bezier(0.3, 1.4, 0.4, 1) both; }
+@keyframes qr-pop {
+  from { transform: scale(0.9); }
+  to { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qr-flow, .qr-ring, .qr-pop { animation: none; }
+}

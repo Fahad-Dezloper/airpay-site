@@ -1,9 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { Container, Eyebrow, Heading, Marked, Phone } from "@/components/ui";
-import { Scrap, type ScrapKind } from "@/components/Art";
 import { HeroStage } from "@/components/HeroStage";
-import { Morph, type MorphItem } from "@/components/Morph";
 import { LogoWall } from "@/components/LogoWall";
 import { Reveal } from "@/components/Reveal";
 import { serviceCounts } from "@/lib/catalogue";
@@ -39,133 +37,21 @@ export default function Home() {
   );
 }
 
-/**
- * The hero (2026-10-11): the headline alone in the middle, and either side of it one drawing on
- * a soft grey tile that keeps becoming the next (`Morph`, the moving mark from the app's first
- * page), with a ring of small stars round it, running off the edge of the page.
- *
- * The left mark goes through what a person does with AirPay; the right one through why it
- * works for them. Every drawing is one the app itself uses. Decoration: the headline says it.
- *
- * Kept to blue and greys: the brand's blue, near-black and a slate grey for the drawings (and
- * the coin's own gold), a lighter blue and a pale grey for the stars.
- */
-type Piece =
-  | { kind: ScrapKind; colour: string; x: number; y: number; size: number; turn?: number; pace?: number }
-  | { dot: string; x: number; y: number; size: number };
-
-const BLUE = "#008fff";
-const INK = "#343433";
-const SLATE = "#8e99a8";
-/** The stars' two: a blue lighter and softer than the brand's, and a pale grey. */
-const STAR_BLUE = "#57b4ff";
-const STAR_GREY = "#d3d8df";
-
-/**
- * The two lists, read side by side. The marks take turns on one clock: the left goes to its next
- * row, then the right goes to its next row. So what is on screen together is either row N with
- * row N, or left row N+1 with right row N — and in neither case may the two share a drawing or a
- * colour.
- *
- * That is why there are three colours going round in threes. On the left: blue, ink, slate,
- * repeating. On the right each row takes the one colour that is neither its left neighbour's
- * nor the next left row's, which works out to slate, blue, ink, repeating — and neither side
- * then shows one colour twice running. It only closes up if the lists are a multiple of three
- * long, and the same length. The SKR token is its own black, so it sits in an ink row; the coin
- * is gold, which matches nothing.
- */
-/** What you do with it. */
-const DOES: MorphItem[] = [
-  { label: "Pay bills", kind: "receipt", colour: BLUE },
-  { label: "Pay anyone", kind: "send", colour: INK },
-  { label: "Shop", kind: "bag", colour: SLATE },
-  { label: "Scan to pay", kind: "scan", colour: BLUE, cover: 0.56 },
-  { label: "Ask for money", kind: "chat", colour: INK },
-  { label: "Your pay code", kind: "qr", colour: SLATE, cover: 0.48 },
-];
-
-/** Why it works for you. */
-const WORKS: MorphItem[] = [
-  { label: "Tap to pay", kind: "tap", colour: SLATE, cover: 0.46 },
-  { label: "Any wallet", kind: "wallet", colour: BLUE },
-  { label: "Earn SKR", kind: "skr", colour: INK, cover: 0.6 },
-  { label: "Keys stay yours", kind: "shield", colour: SLATE },
-  { label: "Paid", kind: "tick", colour: BLUE },
-  { label: "USDC or SOL", kind: "coin", colour: "#ffc53d", cover: 0.5 },
-];
-
-/**
- * The stars round the left tile (which sits at 46, 47): one ring, larger at the top and the two
- * lower corners, smaller between, blue and grey alternating as it goes round, and three specks.
- * Nothing sits under the tile, where its word is. The right side is this, mirrored.
- */
-const LOOSE_LEFT: Piece[] = [
-  { kind: "star", colour: STAR_BLUE, x: 46, y: 5, size: 7, turn: 0, pace: 3.0 },
-  { kind: "spark", colour: STAR_GREY, x: 80, y: 13, size: 5, pace: 3.4 },
-  { kind: "star", colour: STAR_BLUE, x: 87, y: 44, size: 5, turn: 8, pace: 2.8 },
-  { kind: "spark", colour: STAR_GREY, x: 86, y: 76, size: 5, pace: 3.2 },
-  { kind: "star", colour: STAR_GREY, x: 46, y: 97, size: 5, turn: -6, pace: 3.6 },
-  { kind: "star", colour: STAR_BLUE, x: 10, y: 80, size: 7, turn: -8, pace: 3.1 },
-  { kind: "spark", colour: STAR_GREY, x: 3, y: 44, size: 5, pace: 2.9 },
-  { kind: "star", colour: STAR_GREY, x: 14, y: 14, size: 5.5, turn: 8, pace: 3.3 },
-  { dot: STAR_GREY, x: 64, y: 3, size: 2.2 },
-  { dot: STAR_BLUE, x: 90, y: 60, size: 2.2 },
-  { dot: STAR_BLUE, x: 2, y: 26, size: 2.2 },
-];
-
-const LOOSE_RIGHT: Piece[] = LOOSE_LEFT.map((p) => ({ ...p, x: 100 - p.x, ...("turn" in p && p.turn ? { turn: -p.turn } : {}) }));
-
-/** The loose pieces of one group, filling the box it is given. */
-function Loose({ pieces }: { pieces: Piece[] }) {
-  return (
-    <>
-      {pieces.map((c, i) => (
-        <div key={i} className="absolute aspect-square -translate-x-1/2 -translate-y-1/2" style={{ left: `${c.x}%`, top: `${c.y}%`, width: `${c.size}%` }}>
-          <div className="pop-in h-full w-full" style={{ ["--lag" as string]: `${0.1 + i * 0.04}s` }}>
-            {"dot" in c ? (
-              <div className="h-full w-full rounded-full" style={{ background: c.dot }} />
-            ) : (
-              <div className="drift h-full w-full" style={{ ["--turn" as string]: `${c.turn ?? 0}deg`, ["--pace" as string]: `${c.pace ?? 3.2}s`, ["--lag" as string]: `${-i * 0.5}s` }}>
-                <Scrap kind={c.kind} colour={c.colour} />
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-    </>
-  );
-}
-
 function Hero() {
-  // White, the line in the middle in a plain medium weight with nothing behind it, and a moving
-  // mark either side with a few loose pieces round it. On a phone there is no room for two: the
-  // app's own moving mark sits above the line instead.
+  // White and to the point: the line, what you can do, and the email field. Nothing either side.
   return (
     <section id="top" className="relative overflow-hidden bg-white">
-      <div aria-hidden className="pointer-events-none absolute left-[-2%] top-[52%] hidden aspect-[1/1.04] w-[30%] max-w-[600px] -translate-y-1/2 lg:block xl:w-[32%]">
-        <Loose pieces={LOOSE_LEFT} />
-        <div className="absolute left-[46%] top-[47%] w-[46%] -translate-x-1/2 -translate-y-1/2">
-          <Morph items={DOES} />
-        </div>
-      </div>
-      <div aria-hidden className="pointer-events-none absolute right-[-2%] top-[52%] hidden aspect-[1/1.04] w-[30%] max-w-[600px] -translate-y-1/2 lg:block xl:w-[32%]">
-        <Loose pieces={LOOSE_RIGHT} />
-        <div className="absolute left-[54%] top-[47%] w-[46%] -translate-x-1/2 -translate-y-1/2">
-          <Morph items={WORKS} turn={1} />
-        </div>
-      </div>
-
       <div className="relative mx-auto flex min-h-[min(92svh,860px)] w-full max-w-[1560px] flex-col items-center justify-center gap-6 px-5 pb-12 pt-[104px] lg:pb-16">
         <div className="relative mx-auto w-[min(70vw,300px)] lg:hidden">
           <HeroStage four={false} />
         </div>
 
-        <div className="flex max-w-[640px] flex-col items-center text-center">
+        <div className="flex max-w-[680px] flex-col items-center text-center">
           <h1 className="text-[clamp(38px,10.5vw,84px)] font-medium leading-[1.06] tracking-[-0.04em] lg:text-[clamp(52px,5.2vw,88px)]">
             Crypto you can actually spend.
           </h1>
-          <p className="mt-6 max-w-[460px] text-[19px] leading-[1.5] text-quiet">
-            Recharge, pay bills, shop and pay people, straight from the wallets you already have.
+          <p className="mt-6 max-w-[500px] text-[19px] leading-[1.5] text-quiet">
+            Recharge your phone, pay bills, shop and order food, straight from the wallets you already have.
           </p>
           <div className="mt-8 flex w-full flex-col items-center">
             <Waitlist />
@@ -188,7 +74,7 @@ function Does() {
           <Heading className="mt-3">One app for the things you pay for</Heading>
         </Reveal>
 
-        <div id="does-tiles" className="mt-10 grid scroll-mt-[76px] gap-4 md:mt-12 md:auto-rows-[clamp(330px,48svh,430px)] md:grid-cols-2 lg:grid-cols-6">
+        <div id="does-tiles" className="mt-10 grid scroll-mt-[76px] gap-4 md:mt-12 md:auto-rows-[clamp(400px,48svh,430px)] md:grid-cols-2 lg:grid-cols-6">
           <Tile className="md:col-span-2 md:flex-row lg:col-span-4" delay={0}>
             <TileText
               kicker="Everyday essentials"
@@ -216,18 +102,34 @@ function Does() {
           </Tile>
 
           <Tile className="lg:col-span-2" delay={90}>
-            <TileText kicker="Network fees" title="Forget about SOL" text="You never need SOL to pay. The network fee comes out of the USDC you already hold." />
-            {/* The two cases, as two plain cards: what it costs, and when it costs nothing. */}
-            <div className="mt-5 flex flex-1 items-end gap-2.5">
-              <div className="flex-1 rounded-[20px] bg-mist p-4">
-                <Image src="/app/token_usdc.png" alt="" width={56} height={56} className="h-7 w-7 rounded-full" />
-                <p className="mt-3 font-figure text-[22px] font-bold leading-none tabular-nums">0.01 USDC</p>
-                <p className="mt-1.5 text-[13px] font-medium leading-snug text-quiet">per payment, instead of SOL</p>
+            <TileText kicker="Network fees" title="Forget about SOL" text="You never need SOL to pay." />
+            {/* The two cases, as two plain cards. Left: with no SOL, the fee comes out of the
+                token being sent, so it carries a row of tokens and a plus. Right: free for a
+                wallet holding 1,000 SKR.
+                NOTE (2026-10-12): the left card is ahead of the app. Today the fee wallet takes
+                its fee in USDC only (tap/payer/skrpayer/sponsor.py); other tokens are covered
+                only for 1,000 SKR holders. The user chose this wording knowing that. */}
+            <div className="mt-5 flex flex-1 items-end">
+              <div className="grid w-full grid-cols-2 gap-2.5">
+              <div className="rounded-[20px] bg-white p-3.5">
+                <div className="flex gap-1" role="img" aria-label="USDC, USDT, SKR and more">
+                  <Image src="/app/token_usdc.png" alt="" width={56} height={56} className="h-6 w-6 rounded-full" />
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-[#26a17b] text-[13px] font-bold leading-none text-white">₮</span>
+                  <Image src="/app/skr_token.png" alt="" width={56} height={56} className="h-6 w-6 rounded-full" />
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-mist text-ink">
+                    <svg viewBox="0 0 16 16" className="h-3 w-3" aria-hidden>
+                      <path d="M8 2.500v11M2.500 8h11" fill="none" stroke="currentColor" strokeWidth="2.200" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                </div>
+                <p className="mt-2.5 text-[20px] font-bold leading-none">Any token</p>
+                <p className="mt-1.5 text-[13px] font-medium leading-snug text-quiet">Pay gas from the token you are sending, not SOL</p>
               </div>
-              <div className="flex-1 rounded-[20px] bg-highlight p-4">
-                <Image src="/app/skr_token.png" alt="" width={56} height={56} className="h-7 w-7 rounded-full" />
-                <p className="mt-3 text-[22px] font-bold leading-none">Free</p>
+              <div className="flex flex-col rounded-[20px] bg-highlight p-3.5">
+                <Image src="/app/skr_token.png" alt="" width={80} height={80} className="h-10 w-10 rounded-full" />
+                <p className="mt-auto pt-2.5 text-[20px] font-bold leading-none">Free</p>
                 <p className="mt-1.5 text-[13px] font-medium leading-snug">when you hold 1,000 SKR</p>
+              </div>
               </div>
             </div>
           </Tile>

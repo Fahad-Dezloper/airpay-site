@@ -51,7 +51,9 @@ export function Header() {
         </div>
         <a
           href={site.appUrl}
-          className="inline-flex h-11 items-center rounded-full bg-blue px-6 text-[15px] font-bold text-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+          className="inline-flex h-11 items-center rounded-full bg-blue px-6 text-[15px] font-bold text-white"
+          // Set here and not as a class, so nothing in the bar's own styling can drop it.
+          style={{ boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)" }}
         >
           Get the app
         </a>
