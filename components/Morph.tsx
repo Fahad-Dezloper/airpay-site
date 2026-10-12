@@ -1,15 +1,17 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import Image from "next/image";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { Scrap, type ScrapKind } from "@/components/Art";
 
 /**
  * One drawing that keeps becoming the next, on a ground that does not move: the hero's moving
  * mark from the app's first page, cut down so two of them can stand either side of the headline.
  *
- * The ground is one soft neutral tile and stays exactly as it is. Only what is on it changes:
- * the drawing that is leaving shrinks and turns away a quarter, and the next one turns in from
- * the other side and grows into its place, with its word under it.
+ * The tile stays where it is and takes each drawing's own colour in turn. The drawing that is
+ * leaving shrinks and turns away a quarter, and the next one turns in from the other side and
+ * grows into its place, with its word under it. The glyphs are Hugeicons, in white.
  *
  * **Every `Morph` on the page steps on one shared clock, and they take turns.** The clock ticks
  * and only one of them changes: `turn={0}` moves on the odd ticks, `turn={1}` on the even ones,
@@ -20,16 +22,20 @@ import { Scrap, type ScrapKind } from "@/components/Art";
  */
 export type MorphItem = {
   label: string;
-  /** The piece drawn on the tile, and its pigment. */
-  kind: ScrapKind;
+  /** The tile's colour while this one is showing. */
   colour: string;
-  /** How much of the tile the piece covers, as a fraction. Default .52. */
+  /** What is on the tile. One of: a Hugeicons glyph, one of the site's own drawings, or a picture. */
+  icon?: IconSvgElement;
+  kind?: ScrapKind;
+  img?: string;
+  /** The glyph's colour. White unless the tile is too pale for it. */
+  ink?: string;
+  /** How much of the tile it covers, as a fraction. Default .5. */
   cover?: number;
 };
 
 /** Between one change and the next, whichever side it is on. Each side so changes every other one. */
 const EVERY = 1600;
-const GROUND = "#f1f3f6";
 
 let step = 0;
 let timer = 0;
@@ -66,7 +72,12 @@ export function Morph({ items, turn = 0 }: { items: MorphItem[]; turn?: 0 | 1 })
 
   return (
     <div className="[container-type:inline-size]">
-      <div className="relative aspect-square w-full overflow-hidden rounded-[28%]" style={{ background: GROUND }}>
+      <div className="relative aspect-square w-full overflow-hidden rounded-[28%]" style={{ background: items[0].colour }}>
+        {/* Each drawing's colour is its own layer, faded in with it, so the tile can never show
+            one drawing on another's colour. */}
+        {items.map((it, i) => (
+          <div key={it.label} className="absolute inset-0 transition-opacity duration-[560ms]" style={{ background: it.colour, opacity: i === which ? 1 : 0 }} />
+        ))}
         {items.map((it, i) => {
           // Three places: on the tile; just left it (turned away one way); waiting (turned the other).
           const here = i === which;
@@ -77,8 +88,14 @@ export function Morph({ items, turn = 0 }: { items: MorphItem[]; turn?: 0 | 1 })
               className="absolute inset-0 grid place-items-center transition-[opacity,transform] duration-[560ms] ease-[cubic-bezier(0.3,1.2,0.4,1)]"
               style={{ opacity: here ? 1 : 0, transform: `rotate(${turn}deg) scale(${here ? 1 : 0.4})` }}
             >
-              <div className="aspect-square" style={{ width: `${(it.cover ?? 0.52) * 100}%` }}>
-                <Scrap kind={it.kind} colour={it.colour} />
+              <div className="relative aspect-square" style={{ width: `${(it.cover ?? 0.5) * 100}%` }}>
+                {it.icon ? (
+                  <HugeiconsIcon icon={it.icon} size="100%" color={it.ink ?? "#ffffff"} strokeWidth={1.9} />
+                ) : it.img ? (
+                  <Image src={it.img} alt="" fill sizes="160px" className="object-contain" />
+                ) : it.kind ? (
+                  <Scrap kind={it.kind} colour={it.colour} />
+                ) : null}
               </div>
             </div>
           );
