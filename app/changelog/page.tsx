@@ -11,8 +11,10 @@ import { Container, SectionTag } from "@/components/ui";
  */
 
 export const metadata: Metadata = {
-  title: "Changelog · AirPay",
-  description: "What is coming next in AirPay, and what is in the app today.",
+  title: "Changelog",
+  description: "What is coming next in AirPay, the app for paying bills and spending crypto on Solana, and what is in the app today.",
+  alternates: { canonical: "/changelog" },
+  openGraph: { title: "Changelog · AirPay", description: "What is coming next in AirPay, and what is in the app today.", url: "/changelog" },
 };
 
 const COMING = [

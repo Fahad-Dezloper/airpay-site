@@ -15,14 +15,16 @@ import { Container } from "@/components/ui";
  */
 
 export const metadata: Metadata = {
-  title: "Brand · AirPay",
-  description: "The AirPay logo, colours and guidelines.",
+  title: "Brand",
+  description: "The AirPay logo, colours, type and guidelines, with the logo kit to download.",
+  alternates: { canonical: "/brand" },
   openGraph: {
+    url: "/brand",
     title: "Brand · AirPay",
     description: "The AirPay logo, colours and guidelines.",
     images: [{ url: "/brand/og-brand.png", width: 1200, height: 630, alt: "AirPay" }],
   },
-  twitter: { card: "summary_large_image", images: ["/brand/og-brand.png"] },
+  twitter: { card: "summary_large_image", site: "@airpayhq", creator: "@airpayhq", images: ["/brand/og-brand.png"] },
 };
 
 const KIT = "/brand/airpay-logo-kit.zip";

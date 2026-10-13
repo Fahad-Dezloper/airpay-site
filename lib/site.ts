@@ -7,7 +7,9 @@
 export const site = {
   name: "AirPay",
   appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/Fahad-Dezloper/AirPay/releases/latest/download/AirPay.apk",
-  url: "https://airpayy.com",
+  // The address search engines should treat as the real one. The bare domain redirects here.
+  url: "https://www.airpayy.com",
+  twitter: "@airpayhq",
   repoUrl: "https://github.com/Fahad-Dezloper/AirPay",
   twitterUrl: "https://x.com/airpayhq",
 };

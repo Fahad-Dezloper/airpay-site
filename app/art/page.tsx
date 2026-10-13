@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SCRAPS, Scrap, type ScrapKind } from "@/components/Art";
 
-export const metadata: Metadata = { title: "Art · AirPay", robots: { index: false } };
+export const metadata: Metadata = { title: "Art", robots: { index: false, follow: false } };
 
 /**
  * Every scattered piece on one sheet, to look at before it goes on the landing page: each at a

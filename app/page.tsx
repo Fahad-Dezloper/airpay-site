@@ -18,6 +18,9 @@ import { MeetLabel } from "@/components/MeetLabel";
 export default function Home() {
   return (
     <>
+      {/* What the page is, in the form search engines read: who makes it, the site, the app,
+          and the questions with their answers. Built from the same lists the page shows. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()).replace(/</g, "\\u003c") }} />
       <Header />
       <main>
         <Hero />
@@ -35,6 +38,55 @@ export default function Home() {
       <FloatingGet />
     </>
   );
+}
+
+function structuredData() {
+  const org = `${site.url}/#organization`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": org,
+        name: "AirPay",
+        url: site.url,
+        logo: `${site.url}/icon-512.png`,
+        sameAs: [site.twitterUrl, site.repoUrl],
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${site.url}/#website`,
+        url: site.url,
+        name: "AirPay",
+        description: "Pay bills, recharge and shop with crypto, from the Solana wallets you already have.",
+        publisher: { "@id": org },
+        inLanguage: "en",
+      },
+      {
+        "@type": "MobileApplication",
+        "@id": `${site.url}/#app`,
+        name: "AirPay",
+        operatingSystem: "Android",
+        applicationCategory: "FinanceApplication",
+        description:
+          "Recharge your phone, pay bills, buy gift cards and pay people with USDC or SOL, straight from the Solana wallets you already have.",
+        url: site.url,
+        downloadUrl: site.appUrl,
+        image: `${site.url}/og.png`,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        publisher: { "@id": org },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${site.url}/#faq`,
+        mainEntity: FAQS.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
 }
 
 function Hero() {
