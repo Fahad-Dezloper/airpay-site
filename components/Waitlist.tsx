@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 
 /**
  * "Be the first to know": one field and one button.
@@ -31,6 +32,7 @@ export function Waitlist() {
       });
       if (res.ok) {
         setState("done");
+        track("waitlist_signed_up");
       } else {
         setState("error");
         setWhy("We could not save that just now. Please try again.");

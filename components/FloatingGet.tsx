@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
+import { track } from "@/lib/analytics";
 
 /**
  * "Get the app", floating at the foot of the screen for the whole page.
@@ -59,6 +60,7 @@ export function FloatingGet() {
       <a
         href={site.appUrl}
         aria-label="Get the app"
+        onClick={() => track("get_app_clicked", "floating")}
         onMouseEnter={() => setOver(true)}
         onMouseLeave={() => setOver(false)}
         onFocus={() => setOver(true)}

@@ -10,6 +10,9 @@ export const site = {
   // The address search engines should treat as the real one. The bare domain redirects here.
   url: "https://www.airpayy.com",
   twitter: "@airpayhq",
+  // PostHog project key, shared with the app. Public by design: it can only send events, and it
+  // ships in every page anyway. NEXT_PUBLIC_POSTHOG_KEY overrides it; "off" switches analytics off.
+  posthogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "phc_BWFdEGHvJMxz4vVvv9Fif2nZes8eWMoi6UDu5n2AvDNy",
   repoUrl: "https://github.com/Fahad-Dezloper/AirPay",
   twitterUrl: "https://x.com/airpayhq",
 };
