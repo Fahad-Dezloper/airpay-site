@@ -82,6 +82,8 @@ const FOOTER: { title: string; links: { name: string; href: string; icon?: strin
       { name: "Changelog", href: "/changelog" },
       { name: "FAQs", href: "/#faq" },
       { name: "Brand", href: "/brand" },
+      { name: "Recharge app", href: "/recharge" },
+      { name: "Terms", href: "/terms" },
       { name: "Privacy", href: "/privacy" },
     ],
   },

@@ -7,19 +7,19 @@ import { site } from "@/lib/site";
 /**
  * The privacy policy, in plain words.
  *
- * Every line describes what the code does today: what the server's database keeps
- * (tap/server/duffleserver/store.py), what the app keeps on the phone, which outside services
- * each part talks to, and what the website measures. If any of those change, change this page in
+ * Every line describes what the code does today (AirPay 1.1.0, recharges only): what the server
+ * keeps (tap/server/duffleserver/topups.py, support.py), what the app keeps on the phone, which
+ * outside services each part talks to, and what the website measures. If any of those change, change this page in
  * the same commit.
  */
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "What AirPay collects, why, who it is shared with, and how to ask for it to be deleted.",
+  description: "What the AirPay recharge app collects, why, who it is shared with, and how to ask for it to be deleted.",
   alternates: { canonical: "/privacy" },
 };
 
-const UPDATED = "22 October 2026";
+const UPDATED = "19 November 2026";
 
 export default function Privacy() {
   return (
@@ -30,11 +30,12 @@ export default function Privacy() {
           <article className="mx-auto max-w-[720px]">
             <SectionTag>Privacy</SectionTag>
             <h1 className="mt-4 text-[40px] font-bold leading-[1.05] tracking-[-0.04em] md:text-[56px]">Privacy policy</h1>
-            <p className="mt-4 text-[15px] text-quiet">Last updated {UPDATED}</p>
+            <p className="mt-4 text-[15px] text-quiet">Last updated {UPDATED}. Covers the AirPay app from version 1.1.0 and this website.</p>
 
             <Lead>
-              AirPay never holds your keys or your money. Every payment is signed in your own wallet and settles on
-              Solana. We collect as little as we can to make the app work, and we never sell it.
+              AirPay recharges prepaid phones, paid in USDC from your own Solana wallet. It never holds your keys or
+              your money. We collect only what a recharge needs, share it only with the company that delivers the
+              recharge, and never sell it.
             </Lead>
 
             <Part title="What we never collect">
@@ -42,24 +43,7 @@ export default function Privacy() {
                 items={[
                   "Your private keys or seed phrase. They stay in your wallet app.",
                   "Card numbers, bank details or passwords. AirPay has no password.",
-                  "Your phone's contacts or location.",
-                  "Pictures from your camera. The camera is only used to read a QR code, and nothing it sees is saved or sent.",
-                ]}
-              />
-            </Part>
-
-            <Part title="On this website">
-              <List
-                items={[
-                  <>
-                    <b>Your email, if you sign up for early access.</b> It is kept in a private spreadsheet we own, with
-                    the time you signed up, and used only to tell you about AirPay.
-                  </>,
-                  <>
-                    <b>Visits, without cookies.</b> We use PostHog to count visits: which pages are viewed, which links are
-                    pressed, the site you came from, and your browser, device type and country. Nothing is stored in your
-                    browser to do this, and what you type into the email field is never recorded.
-                  </>,
+                  "Your phone's contacts, photos or location.",
                 ]}
               />
             </Part>
@@ -68,46 +52,51 @@ export default function Privacy() {
               <List
                 items={[
                   <>
-                    <b>The wallet addresses you connect.</b> Wallet addresses are public on Solana. We use them to sign
-                    you in and to know which of your wallets belong together.
+                    <b>Your wallet address.</b> Wallet addresses are public on Solana. To sign in, your wallet signs a
+                    one-time message; we check it and keep a session so you are not asked every time.
                   </>,
                   <>
-                    <b>A sign-in signature.</b> To sign in, your wallet signs a one-time message. We check it and keep a
-                    session, so you are not asked every time.
+                    <b>Your recharges.</b> For each order: the phone number, its country and network, the plan, the USDC
+                    amount, the payment address, the order&apos;s status and times, and your wallet address. We keep these
+                    to deliver the recharge, show it in your history and answer questions about it.
                   </>,
                   <>
-                    <b>Your payments.</b> The payment&apos;s reference, amount, the two wallets and the transaction. All of
-                    this is public on Solana already; we keep it to confirm the payment and show it in your history.
+                    <b>Your email, for each order.</b> You enter it before paying. We pass it to the company delivering
+                    the recharge, which sends your receipt, delivery updates and any refund there. Our server does not
+                    store it with the order. If you tick &quot;Save this email&quot;, it is saved on your phone only.
                   </>,
                   <>
-                    <b>Your shop orders.</b> The order, its status and the code delivered to you, so the app can show it
-                    to you. For a phone recharge, the number you enter is passed to Bitrefill to deliver it. Our server
-                    does not keep it.
+                    <b>Help requests.</b> When you ask for help with an order, we keep your email, your message and which
+                    order it is about, and send them to our support inbox so we can reply.
                   </>,
                   <>
-                    <b>Rewards, offers and referrals.</b> What you earned, which offers you claimed, and who invited
-                    whom, by wallet address, so rewards are paid once and to the right person.
-                  </>,
-                  <>
-                    <b>Notes on payments and your name.</b> A note you attach to a request, and a name you pick (such as
-                    a .air name), are kept so the other person can see them.
-                  </>,
-                  <>
-                    <b>A notification token.</b> From Firebase, so we can tell you when a payment arrives or an order is
-                    ready.
+                    <b>A notification token.</b> From Google Firebase, so we can tell you when a recharge is done or did
+                    not go through.
                   </>,
                   <>
                     <b>How the app is used.</b> We use PostHog to count things like how many people open the app, which
-                    screens they visit, and how many connect a wallet or finish a payment, along with device model,
-                    Android version and country. It is anonymous: it is not linked to your wallet address, your name or
-                    your email, nothing you type is recorded, and the advertising ID is not collected.
+                    screens they visit and how many finish a recharge, with device model, Android version and country.
+                    It is not linked to your wallet, phone number or email, nothing you type is recorded, and the
+                    advertising ID is not collected.
                   </>,
                 ]}
               />
-              <p className="mt-4 text-[16px] leading-[1.6] text-quiet">
-                Some things stay on your phone and are never sent to us: the list of people you have paid, your copy of
-                your orders, and your settings.
-              </p>
+            </Part>
+
+            <Part title="On this website">
+              <List
+                items={[
+                  <>
+                    <b>Visits, without cookies.</b> PostHog counts which pages are viewed, which links are pressed, the
+                    site you came from, and your browser, device type and country. Nothing is stored in your browser to
+                    do this.
+                  </>,
+                  <>
+                    <b>Your email, if you signed up for early access.</b> It is kept in a private spreadsheet with the
+                    time you signed up, and used only to tell you about AirPay.
+                  </>,
+                ]}
+              />
             </Part>
 
             <Part title="Who else sees it">
@@ -116,22 +105,31 @@ export default function Privacy() {
               </p>
               <List
                 items={[
-                  <><b>Solana.</b> Payments are recorded on a public blockchain, where anyone can see them, permanently.</>,
-                  <><b>Bitrefill</b> sells and delivers recharges, bills and gift cards, and receives what an order needs.</>,
-                  <><b>Jupiter</b> prices and carries out token swaps when you buy SKR.</>,
-                  <><b>Helius</b> and other Solana data providers, which we ask about balances and payments.</>,
-                  <><b>Google Firebase</b> for notifications.</>,
-                  <><b>PostHog</b> for counting visits to this website and use of the app.</>,
-                  <><b>Google Sheets</b> for the early-access list, and <b>Vercel</b>, which hosts this website.</>,
+                  <>
+                    <b>Cryptorefills</b> delivers most recharges. It receives the phone number, network and plan, your
+                    email, and your IP address and app version, which it uses to prevent fraud.
+                  </>,
+                  <>
+                    <b>Bitrefill</b> delivers small recharges. It receives the phone number, network and plan, your email,
+                    and your wallet address so it can refund you if the recharge fails.
+                  </>,
+                  <><b>Solana.</b> Your payment is recorded on a public blockchain, where anyone can see it, permanently.</>,
+                  <><b>Helius</b> and other Solana data providers, which we ask about payments.</>,
+                  <><b>Google Firebase</b> for notifications, and <b>Gmail</b> for support emails.</>,
+                  <><b>PostHog</b> for counting use of the app and visits to this website.</>,
+                  <><b>Render</b>, which runs our server, and <b>Vercel</b>, which hosts this website.</>,
                 ]}
               />
+              <p className="mt-4 text-[16px] leading-[1.6] text-quiet">
+                Cryptorefills and Bitrefill handle what they receive under their own privacy policies.
+              </p>
             </Part>
 
             <Part title="How long we keep it">
               <p className="text-[16px] leading-[1.6] text-quiet">
-                For as long as you use AirPay, and for as long after that as we need to settle rewards and answer
-                questions about orders. Your early-access email stays until you ask us to remove it. What is on Solana
-                cannot be removed by us or anyone else.
+                Orders and help requests are kept for as long as you use AirPay and for as long after that as we need
+                to answer questions about them and meet legal duties. Your early-access email stays until you ask us to
+                remove it. What is on Solana cannot be removed by us or anyone else.
               </p>
             </Part>
 
@@ -152,11 +150,16 @@ export default function Privacy() {
             <Part title="Changes and contact">
               <p className="text-[16px] leading-[1.6] text-quiet">
                 If this policy changes, we will update this page and the date at the top. To ask a question or make a
-                request, message us on X at{" "}
+                request, email{" "}
+                <a href="mailto:airpayhq@gmail.com" className="font-medium text-blue-ink underline underline-offset-4">
+                  airpayhq@gmail.com
+                </a>{" "}
+                or message us on X at{" "}
                 <a href={site.twitterUrl} target="_blank" rel="noreferrer" className="font-medium text-blue-ink underline underline-offset-4">
                   @airpayhq
                 </a>
-                .
+                . See also our{" "}
+                <a href="/terms" className="font-medium text-blue-ink underline underline-offset-4">terms of use</a>.
               </p>
             </Part>
           </article>
