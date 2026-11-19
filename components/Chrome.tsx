@@ -33,7 +33,7 @@ export function Header() {
     <header className="fixed inset-x-0 top-0 z-50 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-[68px] w-full max-w-[1200px] items-center justify-between px-5 md:px-8">
         <div className="flex items-center gap-5">
-          <a href="/#top" aria-label="AirPay home" className="block">
+          <a href="/" aria-label="AirPay home" className="block">
             <Logo height={28} />
           </a>
           <nav aria-label="Pages" className="hidden items-center text-[15px] font-medium text-quiet sm:flex">
@@ -70,19 +70,16 @@ const FOOTER: { title: string; links: { name: string; href: string; icon?: strin
   {
     title: "Product",
     links: [
-      { name: "What it does", href: "/#does" },
-      { name: "Services", href: "/#services" },
-      { name: "For Seeker owners", href: "/#earn" },
+      { name: "Recharge app", href: "/" },
       { name: "Get the app", href: site.appUrl },
+      { name: "AirPay v1", href: "/v1" },
     ],
   },
   {
     title: "Resources",
     links: [
       { name: "Changelog", href: "/changelog" },
-      { name: "FAQs", href: "/#faq" },
       { name: "Brand", href: "/brand" },
-      { name: "Recharge app", href: "/recharge" },
       { name: "Terms", href: "/terms" },
       { name: "Privacy", href: "/privacy" },
     ],
@@ -113,7 +110,7 @@ export function Footer() {
     <footer className="bg-mist px-3 pb-6 pt-3 md:px-5">
       <div className="mx-auto w-full max-w-[1400px] rounded-[32px] bg-white p-7 md:p-12">
         <div className="grid gap-10 md:grid-cols-[0.5fr_1fr] md:gap-12">
-        <a href="/#top" aria-label="AirPay home" className="block self-start">
+        <a href="/" aria-label="AirPay home" className="block self-start">
           <Logo height={30} />
         </a>
 

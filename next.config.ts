@@ -6,6 +6,10 @@ const ph = process.env.NEXT_PUBLIC_POSTHOG_REGION === "eu" ? "eu" : "us";
 const nextConfig: NextConfig = {
   // PostHog's paths end in a slash; without this Next would redirect them and lose the request.
   skipTrailingSlashRedirect: true,
+  // The dApp Store listing was first given /recharge; the recharge app is now the home page.
+  async redirects() {
+    return [{ source: "/recharge", destination: "/", permanent: true }];
+  },
   async rewrites() {
     return [
       { source: "/relay-ph/static/:path*", destination: `https://${ph}-assets.i.posthog.com/static/:path*` },

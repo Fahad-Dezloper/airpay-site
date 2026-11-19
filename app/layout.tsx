@@ -12,9 +12,9 @@ const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
 });
 
-const title = "AirPay: pay bills, recharge and shop with crypto";
+const title = "AirPay: recharge any phone with USDC";
 const description =
-  "Recharge your phone, pay bills, buy gift cards and pay people with USDC or SOL, straight from the Solana wallets you already have. Built for Solana Seeker.";
+  "Recharge prepaid phones in 140+ countries, paid in USDC straight from the Solana wallet you already have. No AirPay fee. Built for Solana Seeker.";
 
 // The icons and the link-preview picture are the brand kit's own files, copied into /public.
 // `title.template` names every other page "<Page> · AirPay"; a page sets only its own word.
@@ -26,16 +26,12 @@ export const metadata: Metadata = {
   category: "finance",
   keywords: [
     "AirPay",
-    "pay bills with crypto",
-    "spend crypto",
-    "crypto bill payment",
     "mobile recharge with crypto",
-    "gift cards with USDC",
-    "Solana payments app",
+    "phone top-up with USDC",
+    "prepaid recharge crypto",
+    "international mobile top-up",
     "Solana Seeker app",
     "USDC payments",
-    "tap to pay crypto",
-    "SKR rewards",
     "non-custodial payments",
   ],
   authors: [{ name: "AirPay", url: site.url }],
@@ -62,7 +58,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     title,
     description,
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "AirPay: crypto you can actually spend" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "AirPay: recharge any phone with USDC" }],
   },
   twitter: {
     card: "summary_large_image",
