@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls", "delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.airpayy.app",
+      "sha256_cert_fingerprints": ["F9:0B:BF:97:33:FE:AA:BE:71:12:E6:73:9B:8C:E7:37:E9:0D:95:32:64:2A:9A:CF:D7:6A:A6:E0:63:1F:FD:2A"]
+    }
+  }
+]
